@@ -4,7 +4,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 
+import com.google.android.material.textfield.TextInputLayout;
+
 public class Registration extends AppCompatActivity {
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
