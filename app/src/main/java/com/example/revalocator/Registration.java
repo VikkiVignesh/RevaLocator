@@ -313,7 +313,6 @@ public class Registration extends AppCompatActivity implements AdapterView.OnIte
                         startActivity(i);
                     }
                 },10000 );
-
             }
         });
     }
