@@ -1,32 +1,42 @@
 package com.example.revalocator;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.DatePickerDialog;
+
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
-import android.widget.Adapter;
+
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.DatePicker;
+
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.google.android.material.datepicker.MaterialDatePicker;
-import com.google.android.material.textfield.TextInputLayout;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Locale;
+import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+
 
 public class Registration extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
 
-    TextInputLayout Namelyt,Srnlyt,Maillyt,Passlyt,Cfrlyt,Moblyt,Citylyt,Pinlyt,Doblyt;
+    TextInputLayout Namelyt,Srnlyt,Maillyt,Passlyt,Cfrlyt,Moblyt,Citylyt,Pinlyt,Doblyt ,yoj;
     Spinner Glst,Schlst,Semlst;
     Button login,register;
+    FirebaseDatabase fireDb;
+    //FirebaseAuth myAuth;
+    DatabaseReference Dbrefer;
 
     final String sex[]={"Select Gender","Male","Female"};
     final String Sems[]={"0","1","2","3","4","5","6","7","8"};
@@ -47,6 +57,7 @@ public class Registration extends AppCompatActivity implements AdapterView.OnIte
         Citylyt=findViewById(R.id.city);
         Pinlyt=findViewById(R.id.pin);
         Doblyt=findViewById(R.id.dob);
+        yoj=findViewById(R.id.yoj);
         Semlst=findViewById(R.id.sem);
         Schlst=findViewById(R.id.school);
         login=findViewById(R.id.sign_In);
@@ -60,12 +71,12 @@ public class Registration extends AppCompatActivity implements AdapterView.OnIte
         Schlst.setAdapter(adapter2);
         Semlst.setAdapter(adapter3);
 
-        Doblyt.setEndIconOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showDatePickerDialog();
-            }
-        });
+//        Doblyt.setEndIconOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                showDatePickerDialog();
+//            }
+//        });
         Glst.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -123,6 +134,7 @@ public class Registration extends AppCompatActivity implements AdapterView.OnIte
         String city=Citylyt.getEditText().getText().toString();
         String pin=Pinlyt.getEditText().getText().toString();
         String Dob=Doblyt.getEditText().getText().toString();
+        String Yoj=yoj.getEditText().getText().toString();
 
         if(name.isEmpty())
         {Namelyt.setError("Field Required");}
@@ -227,10 +239,30 @@ public class Registration extends AppCompatActivity implements AdapterView.OnIte
         }
 
         if(Namelyt.getError()==null && Srnlyt.getError()==null && Maillyt.getError()==null && Passlyt.getError()==null && Cfrlyt.getError()==null && Moblyt.getError()==null && Citylyt.getError()==null && Pinlyt.getError()==null && Doblyt.getError()==null && !gender.isEmpty() && !school.isEmpty() && !currsem.isEmpty())
-        {
-            Toast.makeText(this, "Registartion Successfull !!!", Toast.LENGTH_SHORT).show();
-            Intent i =new Intent(Registration.this,Login.class);
-            startActivity(i);
+        {    Users user =new Users(name, srn ,pass ,cfrpass,mail,mob ,city,pin , Dob ,Yoj);
+            fireDb=FirebaseDatabase.getInstance(); //Creating instance of Firebase DB
+
+            Dbrefer=fireDb.getReference("Users Data"); //Creating Database Refernces
+            Dbrefer.orderByChild("mail").equalTo(mail).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        // Email already exists in the database
+                        Toast.makeText(Registration.this, "Admin Email already registered. Please use a different email.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        // Email does not exist in the database, proceed with registration
+                        Datastorage(name,user);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Toast.makeText(Registration.this, "Error checking email existence. Please try again.", Toast.LENGTH_SHORT).show();
+                }
+
+            });
+
+
         }
     }
 
@@ -245,29 +277,48 @@ public class Registration extends AppCompatActivity implements AdapterView.OnIte
 
     }
 
-    private void showDatePickerDialog() {
-        Calendar calendar = Calendar.getInstance();
-        // Set up the builder for the MaterialDatePicker
-        MaterialDatePicker.Builder<Long> builder = MaterialDatePicker.Builder.datePicker();
+//    private void showDatePickerDialog() {
+//        Calendar calendar = Calendar.getInstance();
+//        // Set up the builder for the MaterialDatePicker
+//        MaterialDatePicker.Builder<Long> builder = MaterialDatePicker.Builder.datePicker();
+//
+//        // Set the current selection (optional)
+//        builder.setSelection(calendar.getTimeInMillis());
+//
+//        // Create the MaterialDatePicker instance
+//        MaterialDatePicker<Long> materialDatePicker = builder.build();
+//
+//        // Add a listener to handle the selection
+//        materialDatePicker.addOnPositiveButtonClickListener(selection -> {
+//            // Convert the selected date to the desired format
+//            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+//            String formattedDate = sdf.format(selection);
+//
+//            // Set the selected date to the TextInputEditText
+//            Doblyt.getEditText().setText(formattedDate);
+//        });
+//
+//        // Show the MaterialDatePicker
+//        materialDatePicker.show(getSupportFragmentManager(), "MATERIAL_DATE_PICKER");
+//    }
+    private void Datastorage(String name,Users user)
+    {
 
-        // Set the current selection (optional)
-        builder.setSelection(calendar.getTimeInMillis());
+        Dbrefer.child(name).setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                Toast.makeText(Registration.this, "Storing Admin Data.....", Toast.LENGTH_SHORT).show();
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(Registration.this, "Registartion Successfull !!!", Toast.LENGTH_SHORT).show();
+                        Intent i =new Intent(Registration.this,Login.class);
+                        startActivity(i);
+                    }
+                },10000 );
 
-        // Create the MaterialDatePicker instance
-        MaterialDatePicker<Long> materialDatePicker = builder.build();
-
-        // Add a listener to handle the selection
-        materialDatePicker.addOnPositiveButtonClickListener(selection -> {
-            // Convert the selected date to the desired format
-            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-            String formattedDate = sdf.format(selection);
-
-            // Set the selected date to the TextInputEditText
-            Doblyt.getEditText().setText(formattedDate);
+            }
         });
-
-        // Show the MaterialDatePicker
-        materialDatePicker.show(getSupportFragmentManager(), "MATERIAL_DATE_PICKER");
     }
 
 }
