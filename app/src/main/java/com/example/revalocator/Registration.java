@@ -2,6 +2,7 @@ package com.example.revalocator;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -9,10 +10,16 @@ import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.textfield.TextInputLayout;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
 
 public class Registration extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
@@ -53,7 +60,12 @@ public class Registration extends AppCompatActivity implements AdapterView.OnIte
         Schlst.setAdapter(adapter2);
         Semlst.setAdapter(adapter3);
 
-
+        Doblyt.setEndIconOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDatePickerDialog();
+            }
+        });
         Glst.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -232,4 +244,30 @@ public class Registration extends AppCompatActivity implements AdapterView.OnIte
     public void onNothingSelected(AdapterView<?> parent) {
 
     }
+
+    private void showDatePickerDialog() {
+        Calendar calendar = Calendar.getInstance();
+        // Set up the builder for the MaterialDatePicker
+        MaterialDatePicker.Builder<Long> builder = MaterialDatePicker.Builder.datePicker();
+
+        // Set the current selection (optional)
+        builder.setSelection(calendar.getTimeInMillis());
+
+        // Create the MaterialDatePicker instance
+        MaterialDatePicker<Long> materialDatePicker = builder.build();
+
+        // Add a listener to handle the selection
+        materialDatePicker.addOnPositiveButtonClickListener(selection -> {
+            // Convert the selected date to the desired format
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+            String formattedDate = sdf.format(selection);
+
+            // Set the selected date to the TextInputEditText
+            Doblyt.getEditText().setText(formattedDate);
+        });
+
+        // Show the MaterialDatePicker
+        materialDatePicker.show(getSupportFragmentManager(), "MATERIAL_DATE_PICKER");
+    }
+
 }
