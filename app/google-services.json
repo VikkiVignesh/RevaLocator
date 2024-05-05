@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "481075242009",
-    "project_id": "reva-locator",
-    "storage_bucket": "reva-locator.appspot.com"
+    "project_number": "122441046072",
+    "project_id": "reva-events-5fb09",
+    "storage_bucket": "reva-events-5fb09.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:481075242009:android:3137b78f7a88467747f688",
+        "mobilesdk_app_id": "1:122441046072:android:63f11be1fbc8b8100c6ecd",
         "android_client_info": {
           "package_name": "com.example.revalocator"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDR0A_a8-BJIv2xUKe_Y6FHNXqHnOJhlgI"
+          "current_key": "AIzaSyC_wdCmXeMfaDavDIfumpoy1mL6EwxSOsQ"
         }
       ],
       "services": {
