@@ -1,8 +1,8 @@
 package com.example.revalocator;
 
 public class Users {
-    String  name, srn ,pass ,cfrpass,mail,mob ,city,pin , Dob ,yoj;
-    Users(String name,String srn ,String pass , String cfrpass, String mail, String mob , String city, String pin ,String Dob,String yoj)
+    String  name, srn ,pass ,cfrpass,mail,mob ,city,pin , Dob ,yoj,sem,school,gender;
+    Users(String name,String srn ,String pass , String cfrpass, String mail, String mob , String city, String pin ,String Dob,String yoj,String sem, String gender,String school)
     {
         this.name = name;
         this.cfrpass =cfrpass;
@@ -10,11 +10,11 @@ public class Users {
         this.mob =mob;
         this.mail =mail;
         this.Dob =Dob;
-       // this.gender= gender;
+        this.gender= gender;
         this.pin =pin;
         this.pass =pass;
-     //   this.school =school;
-    //    this.sem =sem;
+        this.school =school;
+        this.sem =sem;
         this.srn =srn;
         this.yoj =yoj;
     }
@@ -91,37 +91,37 @@ public class Users {
         Dob = dob;
     }
 
-//    public String getSem() {
-//        return sem;
-//    }
-//
-//    public void setSem(String sem) {
-//        this.sem = sem;
-//    }
-//
-//    public String getGender() {
-//        return gender;
-//    }
-//
-//    public void setGender(String gender) {
-//        this.gender = gender;
-//    }
-//
-//    public String getYoj() {
-//        return yoj;
-//    }
+    public String getSem() {
+        return sem;
+    }
+
+    public void setSem(String sem) {
+        this.sem = sem;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public String getYoj() {
+        return yoj;
+    }
 
     public void setYoj(String yoj) {
         this.yoj = yoj;
     }
 
-//    public String getSchool() {
-//        return school;
-//    }
-//
-//    public void setSchool(String school) {
-//        this.school = school;
-//    }
+    public String getSchool() {
+        return school;
+    }
+
+    public void setSchool(String school) {
+        this.school = school;
+    }
 }
 
 
