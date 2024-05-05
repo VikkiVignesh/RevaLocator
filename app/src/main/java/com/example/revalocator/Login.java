@@ -32,12 +32,12 @@ public class Login extends AppCompatActivity {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String logname = username.getEditText().getText().toString().trim();
+                String srn = username.getEditText().getText().toString().trim();
                 String logpaswd = password.getEditText().getText().toString().trim();
 
 
                 myDb=myFire.getReference("Users Data");
-                myDb.orderByChild("mail").equalTo(logname).addListenerForSingleValueEvent(new ValueEventListener() {
+                myDb.orderByChild("srn").equalTo(srn).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         if (dataSnapshot.exists()) {
