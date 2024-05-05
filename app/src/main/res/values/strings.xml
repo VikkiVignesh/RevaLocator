@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Reva Locator</string>
+    <string name="title_activity_home_maps">HomeMapsActivity</string>
+    <string name="MAPS_API_KEY">AIzaSyBPIUMX05Di24qGOo9jBjcXO7sZqTL52qA</string>
 </resources>

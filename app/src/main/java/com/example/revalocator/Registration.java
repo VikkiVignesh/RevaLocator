@@ -31,14 +31,14 @@ public class Registration extends AppCompatActivity implements AdapterView.OnIte
     final String sex[]={"Select Gender","Male","Female"};
     final String Sems[]={"0","1","2","3","4","5","6","7","8"};
     final String Schools[]={"Select School","School of CSE","School of MECH","School of CIVIL","School of C&IT","School of EEE","School of ECE",
-            "School of Aeronutical","School of Leagal Studies","School of Commerce"};
+    "School of Aeronutical","School of Leagal Studies","School of Commerce"};
     private  String gender="",school="",currsem="";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registration);
         Namelyt=findViewById(R.id.name);
-        Srnlyt=findViewById(R.id.syn);
+        Srnlyt=findViewById(R.id.srn);
         Maillyt=findViewById(R.id.mail);
         Passlyt=findViewById(R.id.pswrd);
         Cfrlyt=findViewById(R.id.cnfrpswrd);
@@ -47,7 +47,7 @@ public class Registration extends AppCompatActivity implements AdapterView.OnIte
         Citylyt=findViewById(R.id.city);
         Pinlyt=findViewById(R.id.pin);
         Doblyt=findViewById(R.id.dob);
-        Semlst=findViewById(R.id.Sem);
+        Semlst=findViewById(R.id.sem);
         Schlst=findViewById(R.id.school);
         login=findViewById(R.id.sign_In);
         register=findViewById(R.id.regi);
@@ -70,7 +70,7 @@ public class Registration extends AppCompatActivity implements AdapterView.OnIte
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if(position!=0)
-                    gender=sex[position];
+                 gender=sex[position];
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
@@ -80,7 +80,7 @@ public class Registration extends AppCompatActivity implements AdapterView.OnIte
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if(position!=0)
-                    school=Schools[position];
+                  school=Schools[position];
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
@@ -90,7 +90,7 @@ public class Registration extends AppCompatActivity implements AdapterView.OnIte
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if(position!=0)
-                    currsem=Sems[position];
+                   currsem=Sems[position];
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
