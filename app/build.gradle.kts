@@ -54,7 +54,6 @@ dependencies {
     implementation("com.google.firebase:firebase-database:20.3.1")
     implementation("com.google.firebase:firebase-auth:22.3.1")
     implementation ("com.google.maps.android:maps-utils-ktx:5.0.0")
-    //implementation ("org.chromium.net:cronet-android:")
     implementation("org.chromium.net:cronet-fallback:119.6045.31")
     implementation("org.chromium.net:cronet-api:119.6045.31")
     implementation("com.google.firebase:firebase-messaging:23.4.1")
