@@ -2,6 +2,7 @@ package com.example.revalocator;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
 
 
 import android.content.Intent;
@@ -13,6 +14,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 
+import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -26,6 +28,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 
 public class Registration extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
@@ -71,12 +76,18 @@ public class Registration extends AppCompatActivity implements AdapterView.OnIte
         Schlst.setAdapter(adapter2);
         Semlst.setAdapter(adapter3);
 
-//        Doblyt.setEndIconOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                showDatePickerDialog();
-//            }
-//        });
+        Doblyt.setEndIconOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+               showDatePickerDialog(Doblyt);
+            }
+        });
+        yoj.setEndIconOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDatePickerDialog(yoj);
+            }
+        });
         Glst.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -126,15 +137,15 @@ public class Registration extends AppCompatActivity implements AdapterView.OnIte
     private void validate()
     {
         String name=Namelyt.getEditText().getText().toString().trim();
-        String srn=Srnlyt.getEditText().getText().toString();
-        String pass=Passlyt.getEditText().getText().toString();
-        String cfrpass=Cfrlyt.getEditText().getText().toString();
-        String mail=Maillyt.getEditText().getText().toString();
-        String mob=Moblyt.getEditText().getText().toString();
-        String city=Citylyt.getEditText().getText().toString();
-        String pin=Pinlyt.getEditText().getText().toString();
-        String Dob=Doblyt.getEditText().getText().toString();
-        String Yoj=yoj.getEditText().getText().toString();
+        String srn=Srnlyt.getEditText().getText().toString().trim();
+        String pass=Passlyt.getEditText().getText().toString().trim();
+        String cfrpass=Cfrlyt.getEditText().getText().toString().trim();
+        String mail=Maillyt.getEditText().getText().toString().trim();
+        String mob=Moblyt.getEditText().getText().toString().trim();
+        String city=Citylyt.getEditText().getText().toString().trim();
+        String pin=Pinlyt.getEditText().getText().toString().trim();
+        String Dob=Doblyt.getEditText().getText().toString().trim();
+        String Yoj=yoj.getEditText().getText().toString().trim();
 
         if(name.isEmpty())
         {Namelyt.setError("Field Required");}
@@ -214,11 +225,19 @@ public class Registration extends AppCompatActivity implements AdapterView.OnIte
         else {
             Doblyt.setError(null);
         }
+        if(Yoj.isEmpty())
+        {
+            Doblyt.setError("Field Required");
+        }
+        else {
+            Doblyt.setError(null);
+        }
+
 
         if(pin.isEmpty())
         {
             Pinlyt.setError("Field Required");
-        } else if (!pin.matches("^[0-9]{5}$")) {
+        } else if (!pin.matches("^[0-9]{6}$")) {
             Pinlyt.setError("Invalid PinCode");
         }
         else {
@@ -229,6 +248,7 @@ public class Registration extends AppCompatActivity implements AdapterView.OnIte
         {
             Toast.makeText(this, "Select Proper Gender", Toast.LENGTH_SHORT).show();
         }
+
         if(school.isEmpty())
         {
             Toast.makeText(this, "Select proper School Name", Toast.LENGTH_SHORT).show();
@@ -238,8 +258,8 @@ public class Registration extends AppCompatActivity implements AdapterView.OnIte
             Toast.makeText(this, "Select correct Semester", Toast.LENGTH_SHORT).show();
         }
 
-        if(Namelyt.getError()==null && Srnlyt.getError()==null && Maillyt.getError()==null && Passlyt.getError()==null && Cfrlyt.getError()==null && Moblyt.getError()==null && Citylyt.getError()==null && Pinlyt.getError()==null && Doblyt.getError()==null && !gender.isEmpty() && !school.isEmpty() && !currsem.isEmpty())
-        {    Users user =new Users(name, srn ,pass ,cfrpass,mail,mob ,city,pin , Dob ,Yoj);
+        if(Namelyt.getError()==null && Srnlyt.getError()==null && Maillyt.getError()==null && Passlyt.getError()==null && Cfrlyt.getError()==null && Moblyt.getError()==null && Citylyt.getError()==null && Pinlyt.getError()==null && Doblyt.getError()==null && yoj.getError()==null && !gender.isEmpty() && !school.isEmpty() && !currsem.isEmpty())
+        {    Users user =new Users(name, srn ,pass ,cfrpass,mail,mob ,city,pin , Dob ,Yoj,currsem,gender,school);
             fireDb=FirebaseDatabase.getInstance(); //Creating instance of Firebase DB
 
             Dbrefer=fireDb.getReference("Users Data"); //Creating Database Refernces
@@ -277,30 +297,7 @@ public class Registration extends AppCompatActivity implements AdapterView.OnIte
 
     }
 
-//    private void showDatePickerDialog() {
-//        Calendar calendar = Calendar.getInstance();
-//        // Set up the builder for the MaterialDatePicker
-//        MaterialDatePicker.Builder<Long> builder = MaterialDatePicker.Builder.datePicker();
-//
-//        // Set the current selection (optional)
-//        builder.setSelection(calendar.getTimeInMillis());
-//
-//        // Create the MaterialDatePicker instance
-//        MaterialDatePicker<Long> materialDatePicker = builder.build();
-//
-//        // Add a listener to handle the selection
-//        materialDatePicker.addOnPositiveButtonClickListener(selection -> {
-//            // Convert the selected date to the desired format
-//            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-//            String formattedDate = sdf.format(selection);
-//
-//            // Set the selected date to the TextInputEditText
-//            Doblyt.getEditText().setText(formattedDate);
-//        });
-//
-//        // Show the MaterialDatePicker
-//        materialDatePicker.show(getSupportFragmentManager(), "MATERIAL_DATE_PICKER");
-//    }
+
     private void Datastorage(String name,Users user)
     {
 
@@ -320,5 +317,34 @@ public class Registration extends AppCompatActivity implements AdapterView.OnIte
             }
         });
     }
+    public static boolean isStartDateAfterEndDate(String startDate, String endDate) {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        try {
+            Date StartDate = sdf.parse(startDate);
+            Date EndDate = sdf.parse(endDate);
+            Date currentDate = new Date();
 
+            boolean isStartDateAfterEndDate = EndDate.after(StartDate);
+            boolean isStartDateAfterCurrentDate = StartDate.after(currentDate);
+
+            // If both conditions are correct, return true
+            if (isStartDateAfterEndDate && isStartDateAfterCurrentDate) {
+                return false;
+            } else {
+                // Otherwise, return false
+                return true;
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+            // Handle parse exception
+        }
+
+        // Start date is not greater than end date
+        return  true;
+    }
+    private void showDatePickerDialog(TextInputLayout dateEditText) {
+
+        DialogFragment newFragment = new DatePickerFragment(dateEditText);
+        newFragment.show(getSupportFragmentManager(), "datePicker");
+    }
 }
