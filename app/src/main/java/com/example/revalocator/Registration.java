@@ -170,6 +170,7 @@ public class Registration extends AppCompatActivity implements AdapterView.OnIte
         String pin=Pinlyt.getEditText().getText().toString().trim();
         String Dob=Doblyt.getEditText().getText().toString().trim();
         String Yoj=yoj.getEditText().getText().toString().trim();
+        String SRN = srn.toUpperCase();
 
         if(name.isEmpty())
         {Namelyt.setError("Field Required");}
@@ -181,12 +182,13 @@ public class Registration extends AppCompatActivity implements AdapterView.OnIte
             Namelyt.setError(null);
         }
 
-        if(srn.isEmpty())
+        if(SRN.isEmpty())
         {Srnlyt.setError("Field Required");
-        } else if (!srn.matches("^[rR][0-9]{2}[a-fA-F0-9]{5}$")) {
+        } else if (!SRN.matches("^[rR][0-9]{2}[a-fA-F0-9]{5}$")) {
             Srnlyt.setError("Srn is not proper");
         }
         else {
+
             Srnlyt.setError(null);
         }
 
@@ -304,7 +306,7 @@ public class Registration extends AppCompatActivity implements AdapterView.OnIte
             Toast.makeText(this, "Error retrieving address", Toast.LENGTH_SHORT).show();
         }
         if(Namelyt.getError()==null && Srnlyt.getError()==null && Maillyt.getError()==null && Passlyt.getError()==null && Cfrlyt.getError()==null && Moblyt.getError()==null && Citylyt.getError()==null && Pinlyt.getError()==null && Doblyt.getError()==null && yoj.getError()==null && !gender.isEmpty() && !school.isEmpty() && !currsem.isEmpty())
-        {    Users user =new Users(name, srn ,pass ,cfrpass,mail,mob ,city,pin , Dob ,Yoj,currsem,gender,school,formattedAddress);
+        {    Users user =new Users(name, SRN ,pass ,cfrpass,mail,mob ,city,pin , Dob ,Yoj,currsem,gender,school,formattedAddress);
             fireDb=FirebaseDatabase.getInstance(); //Creating instance of Firebase DB
 
             Dbrefer=fireDb.getReference("Users Data"); //Creating Database Refernces
@@ -315,8 +317,40 @@ public class Registration extends AppCompatActivity implements AdapterView.OnIte
                         // Email already exists in the database
                         Toast.makeText(Registration.this, "Admin Email already registered. Please use a different email.", Toast.LENGTH_SHORT).show();
                     } else {
-                        // Email does not exist in the database, proceed with registration
-                        Datastorage(name,user);
+                        // Email does not exist in the database, check for SRN and mobile number
+                        Dbrefer.orderByChild("srn").equalTo(srn).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                if (dataSnapshot.exists()) {
+                                    // SRN already exists in the database
+                                    Toast.makeText(Registration.this, "SRN already registered. Please use a different SRN.", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    // SRN does not exist in the database, check for mobile number
+                                    Dbrefer.orderByChild("mob").equalTo(mob).addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                            if (dataSnapshot.exists()) {
+                                                // Mobile number already exists in the database
+                                                Toast.makeText(Registration.this, "Mobile number already registered. Please use a different mobile number.", Toast.LENGTH_SHORT).show();
+                                            } else {
+                                                // SRN and mobile number are unique, proceed with registration
+                                                Datastorage(user);
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError error) {
+                                            Toast.makeText(Registration.this, "Error checking mobile number existence. Please try again.", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                Toast.makeText(Registration.this, "Error checking SRN existence. Please try again.", Toast.LENGTH_SHORT).show();
+                            }
+                        });
                     }
                 }
 
@@ -324,8 +358,8 @@ public class Registration extends AppCompatActivity implements AdapterView.OnIte
                 public void onCancelled(@NonNull DatabaseError error) {
                     Toast.makeText(Registration.this, "Error checking email existence. Please try again.", Toast.LENGTH_SHORT).show();
                 }
-
             });
+
 
 
         }
@@ -343,10 +377,10 @@ public class Registration extends AppCompatActivity implements AdapterView.OnIte
     }
 
 
-    private void Datastorage(String name,Users user)
+    private void Datastorage(Users user)
     {
 
-        Dbrefer.child(name).setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
+        Dbrefer.child(user.srn).setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 Toast.makeText(Registration.this, "Storing Admin Data.....", Toast.LENGTH_SHORT).show();
