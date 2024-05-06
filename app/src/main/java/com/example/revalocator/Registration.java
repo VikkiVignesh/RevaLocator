@@ -3,8 +3,20 @@ package com.example.revalocator;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
+import android.location.Address;
+import android.location.Geocoder;
+import android.os.Bundle;
+import android.widget.Toast;
 
 
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -31,26 +43,38 @@ import com.google.firebase.database.ValueEventListener;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 
-public class Registration extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+public class Registration extends AppCompatActivity implements AdapterView.OnItemSelectedListener,LocationListener {
 
-
+    double latitude ,longitude;
     TextInputLayout Namelyt,Srnlyt,Maillyt,Passlyt,Cfrlyt,Moblyt,Citylyt,Pinlyt,Doblyt ,yoj;
     Spinner Glst,Schlst,Semlst;
     Button login,register;
     FirebaseDatabase fireDb;
     //FirebaseAuth myAuth;
     DatabaseReference Dbrefer;
-
+    String formattedAddress;
     final String sex[]={"Select Gender","Male","Female"};
     final String Sems[]={"0","1","2","3","4","5","6","7","8"};
     final String Schools[]={"Select School","School of CSE","School of MECH","School of CIVIL","School of C&IT","School of EEE","School of ECE",
     "School of Aeronutical","School of Leagal Studies","School of Commerce"};
     private  String gender="",school="",currsem="";
+    private LocationManager locationManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Initialize LocationManager
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+
+        // Request location updates
+        if (checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                || checkSelfPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+        } else {
+
+        }
         setContentView(R.layout.activity_registration);
         Namelyt=findViewById(R.id.name);
         Srnlyt=findViewById(R.id.srn);
@@ -257,9 +281,30 @@ public class Registration extends AppCompatActivity implements AdapterView.OnIte
         {
             Toast.makeText(this, "Select correct Semester", Toast.LENGTH_SHORT).show();
         }
+        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+        try {
+            List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
+            if (addresses != null && addresses.size() > 0) {
+                Address address = addresses.get(0);
+                String fullAddress = address.getAddressLine(0);
+                String City = address.getLocality();
+                String state = address.getAdminArea();
+                String country = address.getCountryName();
+                String postalCode = address.getPostalCode();
+                String knownName = address.getFeatureName();
 
+                // Display the address
+                formattedAddress = String.format("%s, %s, %s, %s, %s", fullAddress, city, state, country, postalCode);
+                //Toast.makeText(this, formattedAddress, Toast.LENGTH_LONG).show();
+            } else {
+                //Toast.makeText(this, "No address found", Toast.LENGTH_SHORT).show();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Error retrieving address", Toast.LENGTH_SHORT).show();
+        }
         if(Namelyt.getError()==null && Srnlyt.getError()==null && Maillyt.getError()==null && Passlyt.getError()==null && Cfrlyt.getError()==null && Moblyt.getError()==null && Citylyt.getError()==null && Pinlyt.getError()==null && Doblyt.getError()==null && yoj.getError()==null && !gender.isEmpty() && !school.isEmpty() && !currsem.isEmpty())
-        {    Users user =new Users(name, srn ,pass ,cfrpass,mail,mob ,city,pin , Dob ,Yoj,currsem,gender,school);
+        {    Users user =new Users(name, srn ,pass ,cfrpass,mail,mob ,city,pin , Dob ,Yoj,currsem,gender,school,formattedAddress);
             fireDb=FirebaseDatabase.getInstance(); //Creating instance of Firebase DB
 
             Dbrefer=fireDb.getReference("Users Data"); //Creating Database Refernces
@@ -346,5 +391,44 @@ public class Registration extends AppCompatActivity implements AdapterView.OnIte
 
         DialogFragment newFragment = new DatePickerFragment(dateEditText);
         newFragment.show(getSupportFragmentManager(), "datePicker");
+    }
+
+    @Override
+    public void onLocationChanged(@NonNull Location location) {
+        // Handle location change
+         latitude = location.getLatitude();
+         longitude = location.getLongitude();
+
+
+    }
+
+    @Override
+    public void onLocationChanged(@NonNull List<Location> locations) {
+        LocationListener.super.onLocationChanged(locations);
+    }
+
+    @Override
+    public void onFlushComplete(int requestCode) {
+        LocationListener.super.onFlushComplete(requestCode);
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+        LocationListener.super.onStatusChanged(provider, status, extras);
+    }
+
+    @Override
+    public void onProviderEnabled(@NonNull String provider) {
+        LocationListener.super.onProviderEnabled(provider);
+    }
+
+    @Override
+    public void onProviderDisabled(@NonNull String provider) {
+        LocationListener.super.onProviderDisabled(provider);
+    }
+
+    @Override
+    public void onPointerCaptureChanged(boolean hasCapture) {
+        super.onPointerCaptureChanged(hasCapture);
     }
 }
