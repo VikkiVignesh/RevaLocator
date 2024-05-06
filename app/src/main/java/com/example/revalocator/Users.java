@@ -1,8 +1,8 @@
 package com.example.revalocator;
 
 public class Users {
-    String  name, srn ,pass ,cfrpass,mail,mob ,city,pin , Dob ,yoj,sem,school,gender;
-    Users(String name,String srn ,String pass , String cfrpass, String mail, String mob , String city, String pin ,String Dob,String yoj,String sem, String gender,String school)
+    String  name, srn ,pass ,cfrpass,mail,mob ,city,pin , Dob ,yoj,sem,school,gender,formatasddress;
+    Users(String name,String srn ,String pass , String cfrpass, String mail, String mob , String city, String pin ,String Dob,String yoj,String sem, String gender,String school,String address)
     {
         this.name = name;
         this.cfrpass =cfrpass;
@@ -17,6 +17,15 @@ public class Users {
         this.sem =sem;
         this.srn =srn;
         this.yoj =yoj;
+        this.formatasddress =address;
+    }
+
+    public String getFormatasddress() {
+        return formatasddress;
+    }
+
+    public void setFormatasddress(String formatasddress) {
+        this.formatasddress = formatasddress;
     }
 
     public String getName() {
