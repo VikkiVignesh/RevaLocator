@@ -35,56 +35,15 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.example.revalocator.R;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-import android.Manifest;
-import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.location.Geocoder;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.os.Bundle;
-import android.provider.Settings;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Toast;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 public class MapsFragment extends Fragment implements LocationListener, OnMapReadyCallback, ActivityCompat.OnRequestPermissionsResultCallback {
  String srn;
     private GoogleMap mMap;
@@ -190,15 +149,27 @@ public class MapsFragment extends Fragment implements LocationListener, OnMapRea
     }
 
     private void updateMarkerPositionInDatabase(LatLng newPosition) {
+        srn = "R21zEF314";
         String dateTime = getCurrentDateTime();
         String locationName = getLocationName(newPosition.latitude, newPosition.longitude);
         DatabaseReference markerLocationsRef = mDatabase.child("markerLocations");
-        DatabaseReference newLocationRef = markerLocationsRef.push(); // Generate a unique ID
-        newLocationRef.child("latitude").setValue(newPosition.latitude);
-        newLocationRef.child("longitude").setValue(newPosition.longitude);
-        newLocationRef.child("locationName").setValue(locationName);
-        newLocationRef.child("dateTime").setValue(dateTime);
+
+        // Check if the SRN is not null
+        if (srn != null) {
+            // Create a child node with the SRN as the key
+            DatabaseReference srnRef = markerLocationsRef.child(srn);
+
+            // Update the child node with the new location and date/time
+            srnRef.child("latitude").setValue(newPosition.latitude);
+            srnRef.child("longitude").setValue(newPosition.longitude);
+            srnRef.child("locationName").setValue(locationName);
+            srnRef.child("dateTime").setValue(dateTime);
+        } else {
+            // Handle the case where SRN is null
+            // You might want to handle this situation based on your app's requirements
+        }
     }
+
 
     private String getLocationName(double latitude, double longitude) {
         Geocoder geocoder = new Geocoder(mContext, Locale.getDefault());
