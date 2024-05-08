@@ -7,7 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
-import com.google.android.gms.maps.model.Polyline;
+import android.os.Handler;
+import android.os.Looper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -24,6 +25,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -31,11 +33,14 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class Timeline extends Fragment implements OnMapReadyCallback {
-
+String srn;
     private DatabaseReference mDatabase;
     private GoogleMap mMap;
     private FusedLocationProviderClient fusedLocationClient;
@@ -43,19 +48,27 @@ public class Timeline extends Fragment implements OnMapReadyCallback {
     private double startLat = 12.974148;
     private double startLng = 77.561220;
     private List<LatLng> defaultCoordinates = new ArrayList<>();
-    private Polyline polyline;
+    private Marker lastVisitedMarker;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_timeline, container, false);
+        View rootview = inflater.inflate(R.layout.fragment_timeline, container, false);
+        if(getArguments()!=null)
+        {
+
+            srn = getArguments().getString("srn");
+        }
+
+
+        return  rootview;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mDatabase = FirebaseDatabase.getInstance().getReference().child("markerLocations");
+        mDatabase = FirebaseDatabase.getInstance().getReference().child("LastVisited");
 
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         if (mapFragment != null) {
@@ -130,18 +143,62 @@ public class Timeline extends Fragment implements OnMapReadyCallback {
         // Request location updates
         fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
     }
-
     private void updateLocation(Location location) {
         // Check if user's location is near any of the default points
         for (LatLng coordinate : defaultCoordinates) {
             float[] distance = new float[1];
             Location.distanceBetween(location.getLatitude(), location.getLongitude(),
                     coordinate.latitude, coordinate.longitude, distance);
-            if (distance[0] < 30) { // Adjust this value as needed for your accuracy requirements
+            if (distance[0] < 20) { // Adjust this value as needed for your accuracy requirements
                 // Place a marker at the coordinate
-                mMap.addMarker(new MarkerOptions().position(coordinate).icon(getMarkerIcon(Color.GREEN)));
+                MarkerOptions markerOptions = new MarkerOptions().position(coordinate);
+                if (coordinate.latitude == startLat && coordinate.longitude == startLng) {
+                    // Green color for start position
+                    markerOptions.icon(getMarkerIcon(Color.GREEN));
+                } else {
+                    // Store the last visited location details in Firebase\
+
+                    DatabaseReference lastVisitedRef = mDatabase.child(srn);
+                    lastVisitedRef.child("SRN").setValue(srn);
+                    lastVisitedRef.child("latitude").setValue(coordinate.latitude);
+                    lastVisitedRef.child("longitude").setValue(coordinate.longitude);
+
+                    // Check if this location is last visited
+                    lastVisitedRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if (dataSnapshot.exists()) {
+                                Double lastVisitedLatitude = dataSnapshot.child("latitude").getValue(Double.class);
+                                Double lastVisitedLongitude = dataSnapshot.child("longitude").getValue(Double.class);
+
+                                if (lastVisitedLatitude != null && lastVisitedLongitude != null &&
+                                        lastVisitedLatitude.equals(coordinate.latitude) && lastVisitedLongitude.equals(coordinate.longitude)) {
+                                    // Green color for just visited locations
+                                    mMap.addMarker(markerOptions.icon(getMarkerIcon(Color.GREEN)));
+                                } else {
+                                    // Red color for other locations
+                                    mMap.addMarker(markerOptions.icon(getMarkerIcon(Color.RED)));
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                            // Handle database error
+                        }
+                    });
+                    return;
+                }
+                // Add the marker to the map
+                mMap.addMarker(markerOptions);
             }
         }
+    }
+
+
+    private String getCurrentDateTime() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        return sdf.format(new Date());
     }
 
     @Override
