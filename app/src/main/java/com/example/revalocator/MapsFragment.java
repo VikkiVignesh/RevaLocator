@@ -102,9 +102,6 @@ public class MapsFragment extends Fragment implements LocationListener, OnMapRea
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
-
-        return rootView;
-
     }
 //    private boolean checkLocationPermission() {
 //        return ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
@@ -148,9 +145,9 @@ public class MapsFragment extends Fragment implements LocationListener, OnMapRea
         if (location != null) {
 
             myLoc = new LatLng(location.getLatitude(), location.getLongitude());
-=======
+
             // Update the marker on the map
-            LatLng myLoc = new LatLng(location.getLatitude(), location.getLongitude());
+           myLoc = new LatLng(location.getLatitude(), location.getLongitude());
 
             if (myMarker != null) {
                 myMarker.setPosition(myLoc);
