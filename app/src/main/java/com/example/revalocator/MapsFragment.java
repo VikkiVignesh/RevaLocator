@@ -103,6 +103,10 @@ public class MapsFragment extends Fragment implements LocationListener, OnMapRea
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
     }
+    public static boolean isGPSEnabled(Context context) {
+        LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        return locationManager != null && locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+    }
 //    private boolean checkLocationPermission() {
 //        return ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
 //                ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
@@ -234,11 +238,6 @@ public class MapsFragment extends Fragment implements LocationListener, OnMapRea
             alert.show();
 
 
-            // Push the latitude and longitude data to Firebase
-            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Student_locations");
-            String srn=getActivity().getIntent().getStringExtra("SRN");
-            String locKey="Loc"+i++;
-            databaseReference.child(srn).child(locKey).setValue(new GeoLocation(location.getLatitude(), location.getLongitude()));
 
         }
     }
