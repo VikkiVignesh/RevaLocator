@@ -46,7 +46,6 @@ public class My_profile extends Fragment {
     public My_profile() {
         // Required empty public constructor
     }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -77,7 +76,6 @@ public class My_profile extends Fragment {
                         String mId=dataSnapshot.child("mail").getValue(String.class);
                         String city=dataSnapshot.child("city").getValue(String.class);
                         String sex=dataSnapshot.child("gender").getValue(String.class);
-
 
                         // Append the formatted user details to the StringBuilder
                         userDetails.append("Name: ").append(name).append("\n");
