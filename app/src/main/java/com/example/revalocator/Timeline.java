@@ -7,7 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
-
+import com.google.android.gms.maps.model.Polyline;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -25,8 +25,6 @@ import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polyline;
-import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -78,10 +76,8 @@ public class Timeline extends Fragment implements OnMapReadyCallback {
 
         // Check if mMap is null before using it
         if (mMap != null) {
-            // Add markers for default coordinates
-            for (LatLng coordinate : defaultCoordinates) {
-                mMap.addMarker(new MarkerOptions().position(coordinate));
-            }
+            // Add marker for start position
+            mMap.addMarker(new MarkerOptions().position(new LatLng(startLat, startLng)));
 
             // Start location updates
             startLocationUpdates();
@@ -91,22 +87,7 @@ public class Timeline extends Fragment implements OnMapReadyCallback {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     try {
-                        // Draw polyline for the path
-                        List<LatLng> pathCoordinates = new ArrayList<>();
-                        pathCoordinates.add(new LatLng(startLat, startLng));
-
-                        for (DataSnapshot markerSnapshot : dataSnapshot.getChildren()) {
-                            Double latitude = markerSnapshot.child("latitude").getValue(Double.class);
-                            Double longitude = markerSnapshot.child("longitude").getValue(Double.class);
-
-                            // Check if latitude and longitude are not null
-                            if (latitude != null && longitude != null) {
-                                LatLng currentCoordinate = new LatLng(latitude, longitude);
-                                pathCoordinates.add(currentCoordinate);
-                            }
-                        }
-
-                        drawPath(pathCoordinates);
+                        // Do nothing related to drawing polyline here
                     } catch (Exception e) {
                         // Handle any exceptions that occur during data retrieval
                         e.printStackTrace();
@@ -156,32 +137,10 @@ public class Timeline extends Fragment implements OnMapReadyCallback {
             float[] distance = new float[1];
             Location.distanceBetween(location.getLatitude(), location.getLongitude(),
                     coordinate.latitude, coordinate.longitude, distance);
-            if (distance[0] < 3) { // Adjust this value as needed for your accuracy requirements
-                // Do something when user is near the coordinate
+            if (distance[0] < 30) { // Adjust this value as needed for your accuracy requirements
+                // Place a marker at the coordinate
                 mMap.addMarker(new MarkerOptions().position(coordinate).icon(getMarkerIcon(Color.GREEN)));
             }
-        }
-    }
-
-    private void drawPath(List<LatLng> pathCoordinates) {
-        try {
-            // Check if mMap is null before using it
-            if (mMap != null) {
-                // Draw polyline for the path
-                PolylineOptions polylineOptions = new PolylineOptions()
-                        .addAll(pathCoordinates)
-                        .color(Color.RED)
-                        .width(5);
-
-                polyline = mMap.addPolyline(polylineOptions);
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(pathCoordinates.get(0), 12));
-            } else {
-                // Handle the case where mMap is null
-                Toast.makeText(getContext(), "Map is not available", Toast.LENGTH_SHORT).show();
-            }
-        } catch (Exception e) {
-            // Handle any exceptions that occur during polyline drawing
-            e.printStackTrace();
         }
     }
 
