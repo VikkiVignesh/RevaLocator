@@ -2,6 +2,8 @@ package com.example.revalocator;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -38,6 +40,7 @@ public class Login extends AppCompatActivity {
                 String logpaswd = password.getEditText().getText().toString().trim();
 
 
+
                 myDb=myFire.getReference("Users Data");
                 myDb.orderByChild("srn").equalTo(srn).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -59,9 +62,12 @@ public class Login extends AppCompatActivity {
                             }
                             if (passwordMatched) {
                                 Toast.makeText(Login.this, "Credentials Matched !!", Toast.LENGTH_SHORT).show();
-                                Intent i=new Intent(Login.this, MainActivity.class);
-                                i.putExtra("UserId",userId);
-                                i.putExtra("SRN",srn);
+
+                                Intent i=new Intent(Login.this,MainActivity.class);
+                                i.putExtra("srn",srn);
+
+                                
+
                                 startActivity(i);
                             } else {
                                 Toast.makeText(Login.this, "Password Not matched", Toast.LENGTH_SHORT).show();
