@@ -1,64 +1,123 @@
 package com.example.revalocator;
 
+import android.graphics.Color;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link Timeline#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class Timeline extends Fragment {
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+import java.util.ArrayList;
+import java.util.List;
 
-    public Timeline() {
-        // Required empty public constructor
-    }
+public class Timeline extends Fragment implements OnMapReadyCallback {
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment Timeline.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static Timeline newInstance(String param1, String param2) {
-        Timeline fragment = new Timeline();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
+    private DatabaseReference mDatabase;
+    private GoogleMap mMap;
+    private double defaultLat = 13.114750;
+    private double defaultLng = 77.634684;
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_timeline, container, false);
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        mDatabase = FirebaseDatabase.getInstance().getReference().child("markerLocations");
+
+        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+        if (mapFragment != null) {
+            mapFragment.getMapAsync(this);
         }
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_timeline, container, false);
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+
+        // Check if mMap is null before using it
+        if (mMap != null) {
+            // Listener to retrieve data from the database
+            mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    try {
+                        // Loop through all marker locations
+                        for (DataSnapshot markerSnapshot : dataSnapshot.getChildren()) {
+                            Double latitude = markerSnapshot.child("latitude").getValue(Double.class);
+                            Double longitude = markerSnapshot.child("longitude").getValue(Double.class);
+
+                            // Check if latitude and longitude are not null
+                            if (latitude != null && longitude != null) {
+                                // Check if the retrieved coordinates match the default coordinates
+                                if (latitude.equals(defaultLat) && longitude.equals(defaultLng)) {
+                                    // Coordinates match, draw a graph from default location to this location
+                                    drawGraph(defaultLat, defaultLng, latitude, longitude);
+                                }
+                            }
+                        }
+                    } catch (Exception e) {
+                        // Handle any exceptions that occur during data retrieval
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    // Handle database error
+                    databaseError.toException().printStackTrace();
+                }
+            });
+        } else {
+            // Handle the case where mMap is null
+            Toast.makeText(getContext(), "Map is not available", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void drawGraph(double startLat, double startLng, double endLat, double endLng) {
+        try {
+            // Check if mMap is null before using it
+            if (mMap != null) {
+                List<LatLng> points = new ArrayList<>();
+                points.add(new LatLng(startLat, startLng));
+                points.add(new LatLng(endLat, endLng));
+
+                PolylineOptions polylineOptions = new PolylineOptions()
+                        .addAll(points)
+                        .color(Color.RED)
+                        .width(5);
+
+                Polyline polyline = mMap.addPolyline(polylineOptions);
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(startLat, startLng), 12));
+            } else {
+                // Handle the case where mMap is null
+                Toast.makeText(getContext(), "Map is not available", Toast.LENGTH_SHORT).show();
+            }
+        } catch (Exception e) {
+            // Handle any exceptions that occur during graph drawing
+            e.printStackTrace();
+        }
     }
 }
+
