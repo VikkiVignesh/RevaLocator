@@ -90,14 +90,6 @@ public class My_profile extends Fragment {
                         userDetails.append("\nDepartment: ").append(department).append("\n");
                         userDetails.append("\nCity: ").append(city).append("\n");
 
-
-
-                        // Set the formatted user details to the TextView
-                        usernameTextView.setText(userDetails.toString());
-//                        for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
-//                            userDetails.append(childSnapshot.getKey()).append(": ")
-//                                    .append(childSnapshot.getValue()).append("\n");
-//                        }
                         usernameTextView.setText(userDetails.toString());
                     }
                 }

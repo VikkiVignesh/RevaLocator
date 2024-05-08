@@ -57,7 +57,7 @@ import java.util.Map;
 
 
 public class MapsFragment extends Fragment implements LocationListener, OnMapReadyCallback, ActivityCompat.OnRequestPermissionsResultCallback {
- String srn;
+    String srn;
     private GoogleMap mMap;
     private Marker myMarker;
     private Context mContext;
@@ -194,7 +194,7 @@ public class MapsFragment extends Fragment implements LocationListener, OnMapRea
                     // Check if the distance is within the desired range (10-20m)
                     if (distance[0] >= 10 && distance[0] <= 20) {
                         // Update the marker on the map
-                        myLoc = new LatLng(location.getLatitude(), location.getLongitude());
+                        LatLng myLoc = new LatLng(location.getLatitude(), location.getLongitude());
                         if (myMarker != null) {
                             myMarker.setPosition(myLoc);
                         } else {
