@@ -141,6 +141,11 @@ public class MapsFragment extends Fragment implements LocationListener, OnMapRea
         }
 
     }
+    public static boolean isGPSEnabled(Context context) {
+        LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        return locationManager != null && locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+    }
+
 
     @Override
     public void onLocationChanged(Location location) {
@@ -148,9 +153,9 @@ public class MapsFragment extends Fragment implements LocationListener, OnMapRea
         if (location != null) {
 
             myLoc = new LatLng(location.getLatitude(), location.getLongitude());
-=======
+
             // Update the marker on the map
-            LatLng myLoc = new LatLng(location.getLatitude(), location.getLongitude());
+            myLoc = new LatLng(location.getLatitude(), location.getLongitude());
 
             if (myMarker != null) {
                 myMarker.setPosition(myLoc);
@@ -237,11 +242,7 @@ public class MapsFragment extends Fragment implements LocationListener, OnMapRea
             alert.show();
 
 
-            // Push the latitude and longitude data to Firebase
-            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Student_locations");
-            String srn=getActivity().getIntent().getStringExtra("SRN");
-            String locKey="Loc"+i++;
-            databaseReference.child(srn).child(locKey).setValue(new GeoLocation(location.getLatitude(), location.getLongitude()));
+
 
         }
     }
