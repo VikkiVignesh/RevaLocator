@@ -53,22 +53,13 @@ public class MainActivity extends AppCompatActivity {
  private GoogleMap mMap;
  LocationStorage SavedLocation=new LocationStorage();
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //storing locations lat & long
-        SavedLocation.addLocation("Library",13.114605,77.635293);
-        SavedLocation.addLocation("Rangasthala",13.114673,77.634885);
-        SavedLocation.addLocation("Admin Block",13.113907,77.634604);
-        SavedLocation.addLocation("Applied Science",13.113950,77.635636);
-        SavedLocation.addLocation("Saugandhika",13.115670,77.636016);
-        SavedLocation.addLocation("Ground",13.116570,77.636176);
-        SavedLocation.addLocation("Food Court",13.115664,77.635998);
-        SavedLocation.addLocation("Coffee",13.114886,77.635889);
-        SavedLocation.addLocation("Maggie Point",13.116095,77.634932);
-        SavedLocation.addLocation("Nandhini",13.116201,77.635376);
+
 
         get_Location();
 
