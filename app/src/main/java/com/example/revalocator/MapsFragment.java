@@ -177,16 +177,11 @@ public class MapsFragment extends Fragment implements LocationListener, OnMapRea
 
     @Override
     public void onLocationChanged(Location location) {
-        LatLng myLoc = null;
+        //LatLng myLoc = null;
         if (location != null) {
 
             LatLng userLocation = new LatLng(location.getLatitude(), location.getLongitude());
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 15));
-
-
-            myLoc = new LatLng(location.getLatitude(), location.getLongitude());
-
-           
             if (myMarker != null) {
                 //Retriving srn from login page
                 String srn = getActivity().getIntent().getStringExtra("SRN");
@@ -226,7 +221,6 @@ public class MapsFragment extends Fragment implements LocationListener, OnMapRea
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 15));
             }
         }
-       updateMarkerPositionInDatabase(myLoc);
     }
     @Override
     public void onDestroy() {
