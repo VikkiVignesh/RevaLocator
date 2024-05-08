@@ -9,6 +9,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import androidx.appcompat.widget.Toolbar;
 
@@ -19,6 +20,8 @@ public class MainActivity extends AppCompatActivity {
  DrawerLayout drawerLayout;
  NavigationView navigationView;
  Toolbar toolbar;
+    private static final int PERMISSION_REQUEST_CODE = 1001;
+ String srn;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,6 +30,9 @@ public class MainActivity extends AppCompatActivity {
         drawerLayout = findViewById(R.id.drawable);
         navigationView =findViewById(R.id.navigationn);
         toolbar  = findViewById(R.id.tool);
+        srn = getIntent().getStringExtra("srn");
+        Log.d("ram",srn);
+
         //step 1 set up the toolbar
         setSupportActionBar(toolbar);// to set the toolbar
 
@@ -77,7 +83,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void fragmentload(Fragment fragment, int flag)
+
     {
+        Bundle bundle = new Bundle();
+        bundle.putString("srn",srn);
+        fragment.setArguments(bundle);
+
+
         FragmentManager fragmentManager   = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         if(flag == 0)

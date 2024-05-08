@@ -12,6 +12,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,6 +52,7 @@ public class MapsFragment extends Fragment implements LocationListener, OnMapRea
     private Context mContext;
     private DatabaseReference mDatabase;
     private static final int PERMISSION_REQUEST_CODE = 1001;
+    private LocationManager locationManager;
 
     @Nullable
     @Override
@@ -59,9 +61,7 @@ public class MapsFragment extends Fragment implements LocationListener, OnMapRea
         if(getArguments()!=null)
         {
 
-            srn = getArguments().getString("SRN");
-
-
+            srn = getArguments().getString("srn");
         }
 
 
@@ -76,9 +76,32 @@ public class MapsFragment extends Fragment implements LocationListener, OnMapRea
         if (mapFragment != null) {
             mapFragment.getMapAsync(this);
         }
+//        if (!checkLocationPermission()) {
+//            requestLocationPermissions();
+//        } else {
+//            // Permissions are already granted, start the service
+//            startLocationService();
+//        }
+
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
     }
+//    private boolean checkLocationPermission() {
+//        return ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+//                ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+//    }
+//    private void requestLocationPermissions() {
+//        ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSION_REQUEST_CODE);
+//    }
+//    private void startLocationService() {
+//        locationManager = (LocationManager) requireContext().getSystemService(Context.LOCATION_SERVICE);
+//        if (locationManager != null) {
+//            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+//        }
+//    }
+
+
+
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -147,9 +170,15 @@ public class MapsFragment extends Fragment implements LocationListener, OnMapRea
         }
        updateMarkerPositionInDatabase(myLoc);
     }
-
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (locationManager != null) {
+            locationManager.removeUpdates(this);
+        }
+    }
     private void updateMarkerPositionInDatabase(LatLng newPosition) {
-        srn = "R21zEF314";
+
         String dateTime = getCurrentDateTime();
         String locationName = getLocationName(newPosition.latitude, newPosition.longitude);
         DatabaseReference markerLocationsRef = mDatabase.child("markerLocations");
@@ -242,6 +271,7 @@ public class MapsFragment extends Fragment implements LocationListener, OnMapRea
             }
         }
     }
+
 //    private void storeUserData(String srn, String location ,String latitude ,String  longitude ,String date_time) {
 //        // Get a reference to the location where the user data will be stored
 //        DatabaseReference userDataRef = mDatabase.child("users").child(srn);
