@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -21,6 +22,7 @@ public class Login extends AppCompatActivity {
     FirebaseDatabase myFire;
     DatabaseReference myDb;
     TextInputLayout username, password;
+    String userId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,12 +53,15 @@ public class Login extends AppCompatActivity {
                                 if (passwordFromDb != null && passwordFromDb.equals(logpaswd)) {
                                     // Password matches, authentication successful
                                     passwordMatched = true;
+                                    userId = snapshot.getKey();
                                     break; // Exit the loop as authentication is successful
                                 }
                             }
                             if (passwordMatched) {
                                 Toast.makeText(Login.this, "Credentials Matched !!", Toast.LENGTH_SHORT).show();
-                                Intent i=new Intent(Login.this,HomeMapsActivity.class);
+                                Intent i=new Intent(Login.this, MainActivity.class);
+                                i.putExtra("UserId",userId);
+                                i.putExtra("SRN",srn);
                                 startActivity(i);
                             } else {
                                 Toast.makeText(Login.this, "Password Not matched", Toast.LENGTH_SHORT).show();
