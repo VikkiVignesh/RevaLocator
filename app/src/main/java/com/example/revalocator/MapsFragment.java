@@ -199,7 +199,7 @@ public class MapsFragment extends Fragment implements LocationListener, OnMapRea
                     // Check if the distance is within the desired range (10-20m)
                     if (distance[0] >= 10 && distance[0] <= 20) {
                         // Update the marker on the map
-                        LatLng myLoc = new LatLng(location.getLatitude(), location.getLongitude());
+                        myLoc = new LatLng(location.getLatitude(), location.getLongitude());
                         if (myMarker != null) {
                             myMarker.setPosition(myLoc);
                         } else {
