@@ -38,6 +38,9 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.example.revalocator.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class MapsFragment extends Fragment implements LocationListener, OnMapReadyCallback, ActivityCompat.OnRequestPermissionsResultCallback {
 
@@ -45,25 +48,18 @@ public class MapsFragment extends Fragment implements LocationListener, OnMapRea
     private Marker myMarker;
     private Context mContext;
     private static final int PERMISSION_REQUEST_CODE = 1001;
-
-
-
+    int i=0;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_maps, container, false);
-        return rootView;
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
         mContext = getContext();
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         if (mapFragment != null) {
             mapFragment.getMapAsync(this);
         }
+        return rootView;
     }
 
     @Override
@@ -71,7 +67,6 @@ public class MapsFragment extends Fragment implements LocationListener, OnMapRea
         mMap = googleMap;
         get_Location();
     }
-
 
     private void get_Location() {
         if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -88,6 +83,7 @@ public class MapsFragment extends Fragment implements LocationListener, OnMapRea
     @Override
     public void onLocationChanged(Location location) {
         if (location != null) {
+            // Update the marker on the map
             LatLng myLoc = new LatLng(location.getLatitude(), location.getLongitude());
             if (myMarker != null) {
                 myMarker.setPosition(myLoc);
@@ -95,6 +91,12 @@ public class MapsFragment extends Fragment implements LocationListener, OnMapRea
                 myMarker = mMap.addMarker(new MarkerOptions().position(myLoc).title("My Location").icon(bitdescriber(mContext, R.drawable.home)));
             }
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLoc, 20));
+
+            // Push the latitude and longitude data to Firebase
+            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Student_locations");
+            String srn=getActivity().getIntent().getStringExtra("SRN");
+            String locKey="Loc"+i++;
+            databaseReference.child(srn).child(locKey).setValue(new GeoLocation(location.getLatitude(), location.getLongitude()));
         }
     }
 
@@ -108,7 +110,6 @@ public class MapsFragment extends Fragment implements LocationListener, OnMapRea
         return BitmapDescriptorFactory.fromBitmap(bitmap);
     }
 
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -120,4 +121,13 @@ public class MapsFragment extends Fragment implements LocationListener, OnMapRea
             }
         }
     }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {}
+
+    @Override
+    public void onProviderEnabled(String provider) {}
+
+    @Override
+    public void onProviderDisabled(String provider) {}
 }
