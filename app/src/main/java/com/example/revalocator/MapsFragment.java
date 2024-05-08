@@ -129,7 +129,10 @@ public class MapsFragment extends Fragment implements LocationListener, OnMapRea
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
 
-
+    }
+    public static boolean isGPSEnabled(Context context) {
+        LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        return locationManager != null && locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 
     }
 //    private boolean checkLocationPermission() {
@@ -180,8 +183,13 @@ public class MapsFragment extends Fragment implements LocationListener, OnMapRea
         //LatLng myLoc = null;
         if (location != null) {
 
-            LatLng userLocation = new LatLng(location.getLatitude(), location.getLongitude());
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 15));
+
+            myLoc = new LatLng(location.getLatitude(), location.getLongitude());
+
+          
+           myLoc = new LatLng(location.getLatitude(), location.getLongitude());
+
+
             if (myMarker != null) {
                 //Retriving srn from login page
                 String srn = getActivity().getIntent().getStringExtra("SRN");

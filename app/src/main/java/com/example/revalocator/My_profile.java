@@ -1,51 +1,33 @@
 package com.example.revalocator;
 
-import android.app.Activity;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
-
-import static android.app.Activity.RESULT_OK;
-
+/**
+ * A simple {@link Fragment} subclass.
+ * Use the {@link My_profile#newInstance} factory method to
+ * create an instance of this fragment.
+ */
 public class My_profile extends Fragment {
 
-    private ImageView profileImageView;
-    private TextView usernameTextView;
-    private Button uploadImageButton;
-    private Uri imageUri;
-    private FirebaseAuth mAuth;
-    private DatabaseReference mDatabase;
-    private FirebaseStorage storage;
+    // TODO: Rename parameter arguments, choose names that match
+    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    private static final String ARG_PARAM1 = "param1";
+    private static final String ARG_PARAM2 = "param2";
 
-    private static final int PICK_IMAGE_REQUEST = 1;
+    // TODO: Rename and change types of parameters
+    private String mParam1;
+    private String mParam2;
 
     public My_profile() {
         // Required empty public constructor
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -115,43 +97,22 @@ public class My_profile extends Fragment {
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(intent, PICK_IMAGE_REQUEST);
+
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK
-                && data != null && data.getData() != null) {
-            imageUri = data.getData();
-            profileImageView.setImageURI(imageUri);
-            uploadImage();
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            mParam1 = getArguments().getString(ARG_PARAM1);
+            mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
 
-    private void uploadImage() {
-        FirebaseUser user = mAuth.getCurrentUser();
-        if (user != null && imageUri != null) {
-            StorageReference storageRef = storage.getReference().child("profile_images")
-                    .child(user.getUid());
-
-            storageRef.putFile(imageUri)
-                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            Toast.makeText(getContext(), "Image uploaded successfully", Toast.LENGTH_SHORT).show();
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(getContext(), "Failed to upload image", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-        }
-//        } else {
-//            // Handle the case where the user is not signed in
-//            Toast.makeText(getContext(), "User is not signed in", Toast.LENGTH_SHORT).show();
-//        }
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_my_profile, container, false);
     }
 }
