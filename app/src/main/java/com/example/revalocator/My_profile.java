@@ -1,5 +1,7 @@
 package com.example.revalocator;
 
+
+
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
@@ -58,6 +60,8 @@ public class My_profile extends Fragment {
 
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference("Users Data");
+        storage = FirebaseStorage.getInstance(); // Initialize Firebase Storage
+
         String uId=getActivity().getIntent().getStringExtra("UserId");
         if (uId != null) {
             // Get user details from Firebase Realtime Database
@@ -88,17 +92,11 @@ public class My_profile extends Fragment {
                         userDetails.append("\nDepartment: ").append(department).append("\n");
                         userDetails.append("\nCity: ").append(city).append("\n");
 
-
-
                         // Set the formatted user details to the TextView
-                        usernameTextView.setText(userDetails.toString());
-//                        for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
-//                            userDetails.append(childSnapshot.getKey()).append(": ")
-//                                    .append(childSnapshot.getValue()).append("\n");
-//                        }
                         usernameTextView.setText(userDetails.toString());
                     }
                 }
+
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
                     Toast.makeText(getContext(), "Failed to load user details", Toast.LENGTH_SHORT).show();
@@ -155,9 +153,5 @@ public class My_profile extends Fragment {
                         }
                     });
         }
-//        } else {
-//            // Handle the case where the user is not signed in
-//            Toast.makeText(getContext(), "User is not signed in", Toast.LENGTH_SHORT).show();
-//        }
     }
 }
