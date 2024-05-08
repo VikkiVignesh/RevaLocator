@@ -103,7 +103,7 @@ public class MapsFragment extends Fragment implements LocationListener, OnMapRea
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
 
-        return rootView;
+
 
     }
 //    private boolean checkLocationPermission() {
