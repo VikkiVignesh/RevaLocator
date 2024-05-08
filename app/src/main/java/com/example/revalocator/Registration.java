@@ -3,9 +3,16 @@ package com.example.revalocator;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
+
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.location.Address;
 import android.location.Geocoder;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.widget.Toast;
 
 
@@ -68,94 +75,96 @@ public class Registration extends AppCompatActivity implements AdapterView.OnIte
         // Initialize LocationManager
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
-        // Request location updates
-        if (checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-                || checkSelfPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
-        } else {
-
+        // Checking For Internet Connection
+        if (!isInternetAvailable()) {
+            // Internet is not available, prompt the user to turn on mobile data
+            Toast.makeText(this, "Please turn on mobile data", Toast.LENGTH_SHORT).show();
+            showEnableDataDialog();
+            // You can also show a dialog or an AlertDialog to prompt the user to turn on mobile data
         }
-        setContentView(R.layout.activity_registration);
-        Namelyt=findViewById(R.id.name);
-        Srnlyt=findViewById(R.id.srn);
-        Maillyt=findViewById(R.id.mail);
-        Passlyt=findViewById(R.id.pswrd);
-        Cfrlyt=findViewById(R.id.cnfrpswrd);
-        Moblyt=findViewById(R.id.mob);
-        Glst=findViewById(R.id.gender);
-        Citylyt=findViewById(R.id.city);
-        Pinlyt=findViewById(R.id.pin);
-        Doblyt=findViewById(R.id.dob);
-        yoj=findViewById(R.id.yoj);
-        Semlst=findViewById(R.id.sem);
-        Schlst=findViewById(R.id.school);
-        login=findViewById(R.id.sign_In);
-        register=findViewById(R.id.regi);
+            setContentView(R.layout.activity_registration);
+            Namelyt = findViewById(R.id.name);
+            Srnlyt = findViewById(R.id.srn);
+            Maillyt = findViewById(R.id.mail);
+            Passlyt = findViewById(R.id.pswrd);
+            Cfrlyt = findViewById(R.id.cnfrpswrd);
+            Moblyt = findViewById(R.id.mob);
+            Glst = findViewById(R.id.gender);
+            Citylyt = findViewById(R.id.city);
+            Pinlyt = findViewById(R.id.pin);
+            Doblyt = findViewById(R.id.dob);
+            yoj = findViewById(R.id.yoj);
+            Semlst = findViewById(R.id.sem);
+            Schlst = findViewById(R.id.school);
+            login = findViewById(R.id.sign_In);
+            register = findViewById(R.id.regi);
 
-        ArrayAdapter<String> adapter1 = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, sex);
-        ArrayAdapter<String> adapter2 = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, Schools);
-        ArrayAdapter<String> adapter3=new ArrayAdapter<>(this, android.R.layout.simple_spinner_item,Sems);
+            ArrayAdapter<String> adapter1 = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, sex);
+            ArrayAdapter<String> adapter2 = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, Schools);
+            ArrayAdapter<String> adapter3 = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, Sems);
 
-        Glst.setAdapter(adapter1);
-        Schlst.setAdapter(adapter2);
-        Semlst.setAdapter(adapter3);
+            Glst.setAdapter(adapter1);
+            Schlst.setAdapter(adapter2);
+            Semlst.setAdapter(adapter3);
 
-        Doblyt.setEndIconOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-               showDatePickerDialog(Doblyt);
-            }
-        });
-        yoj.setEndIconOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showDatePickerDialog(yoj);
-            }
-        });
-        Glst.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if(position!=0)
-                 gender=sex[position];
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
-        Schlst.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if(position!=0)
-                  school=Schools[position];
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
-        Semlst.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if(position!=0)
-                   currsem=Sems[position];
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
-        login.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i=new Intent(Registration.this, Login.class);
-                startActivity(i);
-            }
-        });
-        register.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                validate();
-            }
-        });
+            Doblyt.setEndIconOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    showDatePickerDialog(Doblyt);
+                }
+            });
+            yoj.setEndIconOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    showDatePickerDialog(yoj);
+                }
+            });
+            Glst.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    if (position != 0)
+                        gender = sex[position];
+                }
 
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+                }
+            });
+            Schlst.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    if (position != 0)
+                        school = Schools[position];
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+                }
+            });
+            Semlst.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    if (position != 0)
+                        currsem = Sems[position];
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+                }
+            });
+            login.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent i = new Intent(Registration.this, Login.class);
+                    startActivity(i);
+                }
+            });
+            register.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    validate();
+                }
+            });
     }
 
     private void validate()
@@ -392,7 +401,6 @@ public class Registration extends AppCompatActivity implements AdapterView.OnIte
                         startActivity(i);
                     }
                 },10000 );
-
             }
         });
     }
@@ -464,5 +472,43 @@ public class Registration extends AppCompatActivity implements AdapterView.OnIte
     @Override
     public void onPointerCaptureChanged(boolean hasCapture) {
         super.onPointerCaptureChanged(hasCapture);
+    }
+
+
+    // Method to check internet connectivity
+    private boolean isInternetAvailable() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivityManager != null) {
+            NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+            return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+        }
+        return false;
+    }
+
+    private void showEnableDataDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Enable Mobile Data");
+        builder.setMessage("To use this app, please turn on your mobile data.");
+
+        // Add the buttons
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // Open settings to enable mobile data
+                startActivity(new Intent(Settings.ACTION_DATA_ROAMING_SETTINGS));
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User cancelled the dialog
+                // You can choose to finish() the activity here or handle it in another way
+                finish();
+            }
+        });
+
+        // Create the AlertDialog
+        AlertDialog dialog = builder.create();
+
+        // Show the dialog
+        dialog.show();
     }
 }

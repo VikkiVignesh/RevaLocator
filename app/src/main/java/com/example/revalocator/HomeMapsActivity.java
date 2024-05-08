@@ -133,14 +133,6 @@ public class HomeMapsActivity extends FragmentActivity implements OnMapReadyCall
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_REQUEST_CODE);
         }
 
-//        // after requesting permissions   check whether GPS is Enabled or not
-//        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-//        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-//            // Location services are not enabled, prompt user to enable it
-//
-//            Intent enableLocationIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-//            startActivity(enableLocationIntent);
-//        }
 
         showLocationTurnDialog();
         // Inside onCreate() method, after checking location settings
