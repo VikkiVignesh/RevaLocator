@@ -1,24 +1,20 @@
 package com.example.revalocator;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import java.util.HashMap;
+import java.util.Map;
 
 public class LocationStorage {
-    public HashMap<String, double[]> locationMap;
+    private Map<String, LatLng> locations = new HashMap<>();
 
-    public LocationStorage() {
-        locationMap = new HashMap<>();
-    }
-
+    // Method to add a location to the HashMap
     public void addLocation(String name, double latitude, double longitude) {
-        double[] coordinates = {latitude, longitude};
-        locationMap.put(name, coordinates);
+        locations.put(name, new LatLng(latitude, longitude));
     }
 
-    public double[] getLocationCoordinates(String name) {
-        return locationMap.get(name);
-    }
-
-    public void removeLocation(String name) {
-        locationMap.remove(name);
+    // Method to get all stored locations
+    public Map<String, LatLng> getLocations() {
+        return locations;
     }
 }

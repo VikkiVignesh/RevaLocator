@@ -53,6 +53,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import java.util.Map;
 
 
 public class MapsFragment extends Fragment implements LocationListener, OnMapReadyCallback, ActivityCompat.OnRequestPermissionsResultCallback {
@@ -66,12 +67,37 @@ public class MapsFragment extends Fragment implements LocationListener, OnMapRea
     private LocationManager locationManager;
 
     int i=0;
+    LocationStorage SavedLocation=new LocationStorage();
+
+
+
 
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_maps, container, false);
+
+        //storing locations lat & long
+        /*
+        SavedLocation.addLocation("Library",13.114605,77.635293);
+        SavedLocation.addLocation("Rangasthala",13.114673,77.634885);
+        SavedLocation.addLocation("Admin Block",13.113907,77.634604);
+        SavedLocation.addLocation("Applied Science",13.113950,77.635636);
+        SavedLocation.addLocation("Saugandhika",13.115670,77.636016);
+        SavedLocation.addLocation("Ground",13.116570,77.636176);
+        SavedLocation.addLocation("Food Court",13.115664,77.635998);
+        SavedLocation.addLocation("Coffee",13.114886,77.635889);
+        SavedLocation.addLocation("Maggie Point",13.116095,77.634932);
+        SavedLocation.addLocation("Nandhini",13.116201,77.635376);
+        */
+        SavedLocation.addLocation("A",13.116774,77.631275);
+        SavedLocation.addLocation("B",13.116769,77.631232);
+        SavedLocation.addLocation("C",13.116765,77.631255);
+        SavedLocation.addLocation("D",13.116777,77.631258);
+        SavedLocation.addLocation("E",13.116787,77.631282);
+        SavedLocation.addLocation("F",13.116746,77.631256);
+
 
         if(getArguments()!=null)
         {
@@ -127,6 +153,7 @@ public class MapsFragment extends Fragment implements LocationListener, OnMapRea
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         get_Location();
+
     }
 
     private void get_Location() {
@@ -138,6 +165,7 @@ public class MapsFragment extends Fragment implements LocationListener, OnMapRea
             if (locationManager != null) {
                 locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
             }
+
         }
 
     }
@@ -152,18 +180,51 @@ public class MapsFragment extends Fragment implements LocationListener, OnMapRea
         LatLng myLoc = null;
         if (location != null) {
 
+            LatLng userLocation = new LatLng(location.getLatitude(), location.getLongitude());
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 15));
+
+
             myLoc = new LatLng(location.getLatitude(), location.getLongitude());
 
-            // Update the marker on the map
-            myLoc = new LatLng(location.getLatitude(), location.getLongitude());
-
+           
             if (myMarker != null) {
-                myMarker.setPosition(myLoc);
-            } else {
-                myMarker = mMap.addMarker(new MarkerOptions().position(myLoc).title("My Location").icon(bitdescriber(mContext, R.drawable.std_marker)));
-            }
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLoc, 20));
+                //Retriving srn from login page
+                String srn = getActivity().getIntent().getStringExtra("SRN");
+                // Check if the user's location is within the desired distance of any specified location
+                for (Map.Entry<String, LatLng> entry : SavedLocation.getLocations().entrySet()) {
+                    LatLng savedLoc = entry.getValue();
+                    float[] distance = new float[1];
+                    Location.distanceBetween(location.getLatitude(), location.getLongitude(),
+                            savedLoc.latitude, savedLoc.longitude, distance);
+                    // Check if the distance is within the desired range (10-20m)
+                    if (distance[0] >= 10 && distance[0] <= 20) {
+                        // Update the marker on the map
+                        LatLng myLoc = new LatLng(location.getLatitude(), location.getLongitude());
+                        if (myMarker != null) {
+                            myMarker.setPosition(myLoc);
+                        } else {
+                            mMap.addMarker(new MarkerOptions().position(myLoc).title("Student - " + srn).icon(bitdescriber(mContext, R.drawable.std_marker)));
+                        }
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLoc, 20));
 
+                        // Push the latitude and longitude data to Firebase
+                        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Student_locations");
+
+                        String locKey = "Loc" + i++;
+                        databaseReference.child(srn).child(locKey).setValue(new GeoLocation(location.getLatitude(), location.getLongitude()));
+                        break; // Exit the loop after storing the location
+                    }
+                }
+            }
+            else {
+                String locationString = String.format("Latitude: %f, Longitude: %f", userLocation.latitude, userLocation.longitude);
+                myMarker = mMap.addMarker(new MarkerOptions()
+                        .position(userLocation)
+                        .title("Current Location")
+                        .snippet(locationString)
+                        .icon(bitdescriber(mContext, R.drawable.currloc)));
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 15));
+            }
         }
        updateMarkerPositionInDatabase(myLoc);
     }
@@ -241,10 +302,8 @@ public class MapsFragment extends Fragment implements LocationListener, OnMapRea
             AlertDialog alert = builder.create();
             alert.show();
 
-
-
-
         }
+
     }
 
 
