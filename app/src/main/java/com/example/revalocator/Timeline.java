@@ -40,7 +40,7 @@ import java.util.List;
 import java.util.Locale;
 
 public class Timeline extends Fragment implements OnMapReadyCallback {
-String srn;
+    String srn;
     private DatabaseReference mDatabase;
     private GoogleMap mMap;
     private FusedLocationProviderClient fusedLocationClient;
