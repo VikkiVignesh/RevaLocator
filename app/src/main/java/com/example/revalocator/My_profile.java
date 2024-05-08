@@ -28,22 +28,76 @@ public class My_profile extends Fragment {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment My_profile.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static My_profile newInstance(String param1, String param2) {
-        My_profile fragment = new My_profile();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View view = inflater.inflate(R.layout.fragment_my_profile, container, false);
+
+        profileImageView = view.findViewById(R.id.profile_image_view);
+        usernameTextView = view.findViewById(R.id.username_text_view);
+        uploadImageButton = view.findViewById(R.id.upload_image_button);
+
+        mAuth = FirebaseAuth.getInstance();
+        mDatabase = FirebaseDatabase.getInstance().getReference("Users Data");
+        String uId=getActivity().getIntent().getStringExtra("UserId");
+        if (uId != null) {
+            // Get user details from Firebase Realtime Database
+            mDatabase.child(uId).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        StringBuilder userDetails = new StringBuilder();
+                        // Retrieve the user's details from the dataSnapshot
+                        String name = dataSnapshot.child("name").getValue(String.class);
+                        String srn = dataSnapshot.child("srn").getValue(String.class);
+                        String password = dataSnapshot.child("pass").getValue(String.class);
+                        String dob = dataSnapshot.child("dob").getValue(String.class);
+                        String department = dataSnapshot.child("school").getValue(String.class);
+                        String sem=dataSnapshot.child("sem").getValue(String.class);
+                        String mId=dataSnapshot.child("mail").getValue(String.class);
+                        String city=dataSnapshot.child("city").getValue(String.class);
+                        String sex=dataSnapshot.child("gender").getValue(String.class);
+
+
+                        // Append the formatted user details to the StringBuilder
+                        userDetails.append("Name: ").append(name).append("\n");
+                        userDetails.append("\nSRN: ").append(srn).append("\n");
+                        userDetails.append("\nMail: ").append(mId).append("\n");
+                        userDetails.append("\nPassword: ").append(password).append("\n");
+                        userDetails.append("\nDOB: ").append(dob).append("\n");
+                        userDetails.append("\nGender: ").append(sex).append("\n");
+                        userDetails.append("\nSemester: ").append(sem).append("\n");
+                        userDetails.append("\nDepartment: ").append(department).append("\n");
+                        userDetails.append("\nCity: ").append(city).append("\n");
+
+                        usernameTextView.setText(userDetails.toString());
+                    }
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    Toast.makeText(getContext(), "Failed to load user details", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
+        uploadImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openFileChooser();
+            }
+        });
+
+        return view;
+    }
+
+    private void openFileChooser() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(intent, PICK_IMAGE_REQUEST);
+
     }
 
     @Override

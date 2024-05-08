@@ -64,10 +64,7 @@ public class Login extends AppCompatActivity {
                                 Toast.makeText(Login.this, "Credentials Matched !!", Toast.LENGTH_SHORT).show();
 
                                 Intent i=new Intent(Login.this,MainActivity.class);
-                                i.putExtra("srn",srn);
-
-                                
-
+                                i.putExtra("UserId",userId);
                                 startActivity(i);
                             } else {
                                 Toast.makeText(Login.this, "Password Not matched", Toast.LENGTH_SHORT).show();
