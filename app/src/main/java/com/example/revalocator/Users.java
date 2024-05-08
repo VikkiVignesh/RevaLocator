@@ -1,7 +1,7 @@
 package com.example.revalocator;
 
 public class Users {
-    String  name, srn ,pass ,cfrpass,mail,mob ,city,pin , Dob ,yoj,sem,school,gender,formatasddress;
+    String  name, srn ,pass ,cfrpass,mail,mob ,city,pin , location, Dob ,yoj,sem,school,gender,formatasddress,date_timne, latitude, longitude;
     Users(String name,String srn ,String pass , String cfrpass, String mail, String mob , String city, String pin ,String Dob,String yoj,String sem, String gender,String school,String address)
     {
         this.name = name;
@@ -18,6 +18,46 @@ public class Users {
         this.srn =srn;
         this.yoj =yoj;
         this.formatasddress =address;
+    }
+    Users(String srn, String formatasddress , String latitude, String longitude,String date_time)
+    {
+        this.srn = srn;
+        this.longitude = longitude;
+        this.latitude =latitude;
+        this.date_timne = date_time;
+        this.location = formatasddress;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public String getDate_timne() {
+        return date_timne;
+    }
+
+    public void setDate_timne(String date_timne) {
+        this.date_timne = date_timne;
+    }
+
+    public String getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
+    }
+
+    public String getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(String longitude) {
+        this.longitude = longitude;
     }
 
     public String getFormatasddress() {
