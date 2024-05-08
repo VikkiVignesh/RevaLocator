@@ -66,8 +66,7 @@ public class MainActivity extends AppCompatActivity {
         drawerLayout = findViewById(R.id.drawable);
         navigationView =findViewById(R.id.navigationn);
         toolbar  = findViewById(R.id.tool);
-        srn = getIntent().getStringExtra("srn");
-        Log.d("ram",srn);
+
 
         //step 1 set up the toolbar
         setSupportActionBar(toolbar);// to set the toolbar
