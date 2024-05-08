@@ -88,7 +88,7 @@ public class MapsFragment extends Fragment implements LocationListener, OnMapRea
             if (myMarker != null) {
                 myMarker.setPosition(myLoc);
             } else {
-                myMarker = mMap.addMarker(new MarkerOptions().position(myLoc).title("My Location").icon(bitdescriber(mContext, R.drawable.home)));
+                myMarker = mMap.addMarker(new MarkerOptions().position(myLoc).title("My Location").icon(bitdescriber(mContext, R.drawable.std_marker)));
             }
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLoc, 20));
 
