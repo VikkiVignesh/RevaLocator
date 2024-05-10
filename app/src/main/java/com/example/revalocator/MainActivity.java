@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
         // Load MapsFragment initially
-       fragmentload(new My_profile(),0);
+       fragmentload(new MapsFragment(),0);
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected( MenuItem item) {
@@ -122,6 +122,7 @@ public class MainActivity extends AppCompatActivity {
     {
         Bundle bundle = new Bundle();
         bundle.putString("srn",srn);
+
         fragment.setArguments(bundle);
 
 

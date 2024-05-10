@@ -18,6 +18,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+
                 <ImageView
                     android:id="@+id/profile_image_view"
                     android:layout_width="150dp"
@@ -38,13 +39,14 @@
                     android:text="Upload Image"
                     android:textSize="8dp" />
             </LinearLayout>
+
             <TextView
                 android:id="@+id/username_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/profile_image_view"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="210dp"
+
                 android:text="Username"
                 android:textAppearance="?android:textAppearanceMedium" />
 

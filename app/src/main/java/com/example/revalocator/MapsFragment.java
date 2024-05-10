@@ -73,11 +73,7 @@ public class MapsFragment extends Fragment implements LocationListener, OnMapRea
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_maps, container, false);
 
-        if(getArguments()!=null)
-        {
-
-            srn = getArguments().getString("srn");
-        }
+        srn=getActivity().getIntent().getStringExtra("srn");
 
 
         return rootView;
