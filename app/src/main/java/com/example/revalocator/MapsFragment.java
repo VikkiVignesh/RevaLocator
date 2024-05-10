@@ -56,7 +56,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 
 public class MapsFragment extends Fragment implements LocationListener, OnMapReadyCallback, ActivityCompat.OnRequestPermissionsResultCallback {
- String srn;
+    String srn;
     private GoogleMap mMap;
     private Marker myMarker;
     private Context mContext;
@@ -73,11 +73,7 @@ public class MapsFragment extends Fragment implements LocationListener, OnMapRea
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_maps, container, false);
 
-        if(getArguments()!=null)
-        {
-
-            srn = getArguments().getString("srn");
-        }
+        srn=getActivity().getIntent().getStringExtra("srn");
 
 
         return rootView;
@@ -151,7 +147,7 @@ public class MapsFragment extends Fragment implements LocationListener, OnMapRea
             myLoc = new LatLng(location.getLatitude(), location.getLongitude());
 
             // Update the marker on the map
-           myLoc = new LatLng(location.getLatitude(), location.getLongitude());
+            myLoc = new LatLng(location.getLatitude(), location.getLongitude());
 
             if (myMarker != null) {
                 myMarker.setPosition(myLoc);
@@ -161,7 +157,7 @@ public class MapsFragment extends Fragment implements LocationListener, OnMapRea
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLoc, 20));
 
         }
-       updateMarkerPositionInDatabase(myLoc);
+        updateMarkerPositionInDatabase(myLoc);
     }
     @Override
     public void onDestroy() {

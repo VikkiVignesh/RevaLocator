@@ -40,7 +40,7 @@ import java.util.List;
 import java.util.Locale;
 
 public class Timeline extends Fragment implements OnMapReadyCallback {
-String srn;
+    String srn;
     private DatabaseReference mDatabase;
     private GoogleMap mMap;
     private FusedLocationProviderClient fusedLocationClient;
@@ -54,11 +54,7 @@ String srn;
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootview = inflater.inflate(R.layout.fragment_timeline, container, false);
-        if(getArguments()!=null)
-        {
-
-            srn = getArguments().getString("srn");
-        }
+        srn=getActivity().getIntent().getStringExtra("srn");
 
 
         return  rootview;
@@ -68,7 +64,7 @@ String srn;
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mDatabase = FirebaseDatabase.getInstance().getReference().child("LastVisited");
+        mDatabase = FirebaseDatabase.getInstance().getReference();
 
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         if (mapFragment != null) {
@@ -144,6 +140,7 @@ String srn;
         fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
     }
     private void updateLocation(Location location) {
+        String dateTime = getCurrentDateTime();
         // Check if user's location is near any of the default points
         for (LatLng coordinate : defaultCoordinates) {
             float[] distance = new float[1];
@@ -157,11 +154,12 @@ String srn;
                     markerOptions.icon(getMarkerIcon(Color.GREEN));
                 } else {
                     // Store the last visited location details in Firebase\
-
-                    DatabaseReference lastVisitedRef = mDatabase.child(srn);
+                    DatabaseReference lastVisitedRef ;
+                    lastVisitedRef = mDatabase.child("LastVisited").child(srn);
                     lastVisitedRef.child("SRN").setValue(srn);
                     lastVisitedRef.child("latitude").setValue(coordinate.latitude);
                     lastVisitedRef.child("longitude").setValue(coordinate.longitude);
+                    lastVisitedRef.child("Date-Time").setValue(dateTime);
 
                     // Check if this location is last visited
                     lastVisitedRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -173,7 +171,7 @@ String srn;
 
                                 if (lastVisitedLatitude != null && lastVisitedLongitude != null &&
                                         lastVisitedLatitude.equals(coordinate.latitude) && lastVisitedLongitude.equals(coordinate.longitude)) {
-                                    // Green color for just visited locations
+                                    // Green color for last visited location
                                     mMap.addMarker(markerOptions.icon(getMarkerIcon(Color.GREEN)));
                                 } else {
                                     // Red color for other locations
