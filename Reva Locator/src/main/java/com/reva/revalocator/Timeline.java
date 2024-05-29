@@ -72,6 +72,18 @@ public class Timeline extends Fragment implements OnMapReadyCallback {
         // Add default coordinates to the list
         defaultCoordinates.add(new LatLng(12.974470, 77.561125));
         defaultCoordinates.add(new LatLng(12.973643, 77.561067));
+        defaultCoordinates.add(new LatLng(13.114605,77.635293));
+        defaultCoordinates.add(new LatLng(13.114673,77.634885));
+        defaultCoordinates.add(new LatLng(13.113907,77.634604));
+        defaultCoordinates.add(new LatLng(13.113950,77.635636));
+        defaultCoordinates.add(new LatLng(13.115670,77.636016));
+        defaultCoordinates.add(new LatLng(13.115664,77.635998));
+        defaultCoordinates.add(new LatLng(13.114886,77.635889));
+        defaultCoordinates.add(new LatLng(13.116095,77.634932));
+        //defaultCoordinates.add(new LatLng(13.116095,77.634932));
+        defaultCoordinates.add(new LatLng(13.116201,77.63537));
+
+       
 
         // Initialize fusedLocationClient
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext());
