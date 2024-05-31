@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
  Toolbar toolbar;
 
 
- String srn;
+ String srn,section,semester;
 
  final int PERMISSION_REQUEST_CODE = 1001;
  private GoogleMap mMap;
@@ -120,7 +120,8 @@ public class MainActivity extends AppCompatActivity {
     {
         Bundle bundle = new Bundle();
         bundle.putString("srn",srn);
-
+        bundle.putString("section",section);
+        bundle.putString("semester",semester);
         fragment.setArguments(bundle);
 
 

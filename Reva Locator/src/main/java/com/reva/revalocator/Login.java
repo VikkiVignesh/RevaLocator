@@ -21,7 +21,7 @@ public class Login extends AppCompatActivity {
     FirebaseDatabase myFire;
     DatabaseReference myDb;
     TextInputLayout username, password;
-    String userId;
+    String userId,section,semester ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,6 +54,9 @@ public class Login extends AppCompatActivity {
                                     // Password matches, authentication successful
                                     passwordMatched = true;
                                     userId = snapshot.getKey();
+                                    section = snapshot.child("section").getValue(String.class);
+                                    semester = snapshot.child("sem").getValue(String.class);
+
                                     break; // Exit the loop as authentication is successful
                                 }
                             }
@@ -63,6 +66,8 @@ public class Login extends AppCompatActivity {
                                 Intent i=new Intent(Login.this,MainActivity.class);
                                 i.putExtra("UserId",userId);
                                 i.putExtra("srn",srn);
+                                i.putExtra("section", section);
+                                i.putExtra("semester", semester);
                                 startActivity(i);
                             } else {
                                 Toast.makeText(Login.this, "Password Not matched", Toast.LENGTH_SHORT).show();

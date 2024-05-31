@@ -1,8 +1,8 @@
 package com.reva.revalocator;
 
 public class Users {
-    String  name, srn ,pass ,cfrpass,mail,mob ,city,pin , location, Dob ,yoj,sem,school,gender,formatasddress,date_timne, latitude, longitude;
-    Users(String name,String srn ,String pass , String cfrpass, String mail, String mob , String city, String pin ,String Dob,String yoj,String sem, String gender,String school,String address)
+    String  name, srn ,pass ,cfrpass,mail,mob ,city,pin , location, Dob ,yoj,sem,school,gender,formatasddress,date_timne, latitude, longitude,Section;
+    Users(String name,String srn ,String pass , String cfrpass, String mail, String mob , String city, String pin ,String Dob,String yoj,String sem, String gender,String school,String address,String Section)
     {
         this.name = name;
         this.cfrpass =cfrpass;
@@ -18,6 +18,7 @@ public class Users {
         this.srn =srn;
         this.yoj =yoj;
         this.formatasddress =address;
+        this.Section =Section;
     }
     Users(String srn, String formatasddress , String latitude, String longitude,String date_time)
     {
@@ -26,6 +27,14 @@ public class Users {
         this.latitude =latitude;
         this.date_timne = date_time;
         this.location = formatasddress;
+    }
+
+    public String getSection() {
+        return Section;
+    }
+
+    public void setSection(String section) {
+        Section = section;
     }
 
     public String getLocation() {

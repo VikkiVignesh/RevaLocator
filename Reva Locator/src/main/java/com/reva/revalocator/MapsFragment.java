@@ -46,7 +46,7 @@ import java.util.List;
 
 
 public class MapsFragment extends Fragment implements LocationListener, OnMapReadyCallback, ActivityCompat.OnRequestPermissionsResultCallback {
-    String srn;
+    String srn,sem,sec;
     private GoogleMap mMap;
     private Marker myMarker;
     private Context mContext;
@@ -64,6 +64,8 @@ public class MapsFragment extends Fragment implements LocationListener, OnMapRea
         View rootView = inflater.inflate(R.layout.fragment_maps, container, false);
 
         srn=getActivity().getIntent().getStringExtra("srn");
+        sem=getActivity().getIntent().getStringExtra("semester");
+        sec=getActivity().getIntent().getStringExtra("section");
 
 
         return rootView;
@@ -161,17 +163,20 @@ public class MapsFragment extends Fragment implements LocationListener, OnMapRea
         String dateTime = getCurrentDateTime();
         String locationName = getLocationName(newPosition.latitude, newPosition.longitude);
         DatabaseReference markerLocationsRef = mDatabase.child("markerLocations");
+        DatabaseReference markerLocationsRef2 = mDatabase.child("Semesters");
 
         // Check if the SRN is not null
         if (srn != null) {
             // Create a child node with the SRN as the key
             DatabaseReference srnRef = markerLocationsRef.child(srn);
+            DatabaseReference srnRef2 = markerLocationsRef2.child();
 
             // Update the child node with the new location and date/time
             srnRef.child("latitude").setValue(newPosition.latitude);
             srnRef.child("longitude").setValue(newPosition.longitude);
             srnRef.child("locationName").setValue(locationName);
             srnRef.child("dateTime").setValue(dateTime);
+
         } else {
             // Handle the case where SRN is null
             // You might want to handle this situation based on your app's requirements

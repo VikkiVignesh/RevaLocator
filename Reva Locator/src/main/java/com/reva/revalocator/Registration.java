@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -53,7 +54,7 @@ public class Registration extends AppCompatActivity implements AdapterView.OnIte
 
     double latitude ,longitude;
     TextInputLayout Namelyt,Srnlyt,Maillyt,Passlyt,Cfrlyt,Moblyt,Citylyt,Pinlyt,Doblyt ,yoj;
-    Spinner Glst,Schlst,Semlst;
+    Spinner Glst,Schlst,Semlst,sectionss;
     Button login,register;
     FirebaseDatabase fireDb;
     //FirebaseAuth myAuth;
@@ -63,8 +64,10 @@ public class Registration extends AppCompatActivity implements AdapterView.OnIte
     final String Sems[]={"0","1","2","3","4","5","6","7","8"};
     final String Schools[]={"Select School","School of CSE","School of MECH","School of CIVIL","School of C&IT","School of EEE","School of ECE",
     "School of Aeronutical","School of Leagal Studies","School of Commerce"};
-    private  String gender="",school="",currsem="";
+    final String[] SectionS ={"Section A","Section B","Section C","Section D","Section E","Section F","Section G","Section H","Section I","Section J"};
+    private  String gender="",school="",currsem="",Section="";
     private LocationManager locationManager;
+    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,16 +95,19 @@ public class Registration extends AppCompatActivity implements AdapterView.OnIte
             yoj = findViewById(R.id.yoj);
             Semlst = findViewById(R.id.sem);
             Schlst = findViewById(R.id.school);
+            sectionss = findViewById(R.id.section);
             login = findViewById(R.id.sign_In);
             register = findViewById(R.id.regi);
 
             ArrayAdapter<String> adapter1 = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, sex);
             ArrayAdapter<String> adapter2 = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, Schools);
+            ArrayAdapter<String> adapter4 = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, SectionS);
             ArrayAdapter<String> adapter3 = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, Sems);
 
             Glst.setAdapter(adapter1);
             Schlst.setAdapter(adapter2);
             Semlst.setAdapter(adapter3);
+            sectionss.setAdapter(adapter4);
 
             Doblyt.setEndIconOnClickListener(new View.OnClickListener() {
                 @Override
@@ -137,6 +143,17 @@ public class Registration extends AppCompatActivity implements AdapterView.OnIte
                 public void onNothingSelected(AdapterView<?> parent) {
                 }
             });
+        sectionss.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (position != 0)
+                    Section = SectionS[position];
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
             Semlst.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -284,6 +301,10 @@ public class Registration extends AppCompatActivity implements AdapterView.OnIte
         {
             Toast.makeText(this, "Select proper School Name", Toast.LENGTH_SHORT).show();
         }
+        if(Section.isEmpty())
+        {
+            Toast.makeText(this, "Select proper Section", Toast.LENGTH_SHORT).show();
+        }
         if(currsem.isEmpty())
         {
             Toast.makeText(this, "Select correct Semester", Toast.LENGTH_SHORT).show();
@@ -311,7 +332,7 @@ public class Registration extends AppCompatActivity implements AdapterView.OnIte
             Toast.makeText(this, "Error retrieving address", Toast.LENGTH_SHORT).show();
         }
         if(Namelyt.getError()==null && Srnlyt.getError()==null && Maillyt.getError()==null && Passlyt.getError()==null && Cfrlyt.getError()==null && Moblyt.getError()==null && Citylyt.getError()==null && Pinlyt.getError()==null && Doblyt.getError()==null && yoj.getError()==null && !gender.isEmpty() && !school.isEmpty() && !currsem.isEmpty())
-        {    Users user =new Users(name, SRN ,pass ,cfrpass,mail,mob ,city,pin , Dob ,Yoj,currsem,gender,school,formattedAddress);
+        {    Users user =new Users(name, SRN ,pass ,cfrpass,mail,mob ,city,pin , Dob ,Yoj,currsem,gender,school,formattedAddress,Section);
             fireDb=FirebaseDatabase.getInstance(); //Creating instance of Firebase DB
 
             Dbrefer=fireDb.getReference("Users Data"); //Creating Database Refernces
@@ -400,6 +421,7 @@ public class Registration extends AppCompatActivity implements AdapterView.OnIte
             }
         });
     }
+
     public static boolean isStartDateAfterEndDate(String startDate, String endDate) {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
         try {
