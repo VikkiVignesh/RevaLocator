@@ -1,6 +1,11 @@
 package com.reva.revalocator;
 
+
+
+import android.content.Context;
 import android.graphics.Color;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -31,6 +36,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -38,7 +44,8 @@ import java.util.List;
 import java.util.Locale;
 
 public class Timeline extends Fragment implements OnMapReadyCallback {
-    String srn;
+    private String srn, sem, sec;
+    private Context mContext;
     private DatabaseReference mDatabase;
     private GoogleMap mMap;
     private FusedLocationProviderClient fusedLocationClient;
@@ -52,15 +59,19 @@ public class Timeline extends Fragment implements OnMapReadyCallback {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootview = inflater.inflate(R.layout.fragment_timeline, container, false);
-        srn=getActivity().getIntent().getStringExtra("srn");
+        if (getActivity() != null) {
+            srn = getActivity().getIntent().getStringExtra("srn");
+            sem = getActivity().getIntent().getStringExtra("semester");
+            sec = getActivity().getIntent().getStringExtra("section");
+        }
 
-
-        return  rootview;
+        return rootview;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        mContext = getContext();
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
@@ -70,23 +81,25 @@ public class Timeline extends Fragment implements OnMapReadyCallback {
         }
 
         // Add default coordinates to the list
-        defaultCoordinates.add(new LatLng(12.974470, 77.561125));
-        defaultCoordinates.add(new LatLng(12.973643, 77.561067));
-        defaultCoordinates.add(new LatLng(13.114605,77.635293));
-        defaultCoordinates.add(new LatLng(13.114673,77.634885));
-        defaultCoordinates.add(new LatLng(13.113907,77.634604));
-        defaultCoordinates.add(new LatLng(13.113950,77.635636));
-        defaultCoordinates.add(new LatLng(13.115670,77.636016));
-        defaultCoordinates.add(new LatLng(13.115664,77.635998));
-        defaultCoordinates.add(new LatLng(13.114886,77.635889));
-        defaultCoordinates.add(new LatLng(13.116095,77.634932));
-        //defaultCoordinates.add(new LatLng(13.116095,77.634932));
-        defaultCoordinates.add(new LatLng(13.116201,77.63537));
-
-       
+        initializeDefaultCoordinates();
 
         // Initialize fusedLocationClient
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext());
+    }
+
+    private void initializeDefaultCoordinates() {
+        defaultCoordinates.add(new LatLng(12.974470, 77.561125));
+        defaultCoordinates.add(new LatLng(12.9740050, 77.56126166666667));
+        defaultCoordinates.add(new LatLng(12.973643, 77.561067));
+        defaultCoordinates.add(new LatLng(13.114605, 77.635293));
+        defaultCoordinates.add(new LatLng(13.114673, 77.634885));
+        defaultCoordinates.add(new LatLng(13.113907, 77.634604));
+        defaultCoordinates.add(new LatLng(13.113950, 77.635636));
+        defaultCoordinates.add(new LatLng(13.115670, 77.636016));
+        defaultCoordinates.add(new LatLng(13.115664, 77.635998));
+        defaultCoordinates.add(new LatLng(13.114886, 77.635889));
+        defaultCoordinates.add(new LatLng(13.116095, 77.634932));
+        defaultCoordinates.add(new LatLng(13.116201, 77.635370));
     }
 
     @Override
@@ -105,18 +118,13 @@ public class Timeline extends Fragment implements OnMapReadyCallback {
             mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    try {
-                        // Do nothing related to drawing polyline here
-                    } catch (Exception e) {
-                        // Handle any exceptions that occur during data retrieval
-                        e.printStackTrace();
-                    }
+                    // Do nothing related to drawing polyline here
                 }
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
                     // Handle database error
-                    databaseError.toException().printStackTrace();
+                    Toast.makeText(getContext(), "Database error: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
         } else {
@@ -149,6 +157,7 @@ public class Timeline extends Fragment implements OnMapReadyCallback {
         // Request location updates
         fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
     }
+
     private void updateLocation(Location location) {
         String dateTime = getCurrentDateTime();
         // Check if user's location is near any of the default points
@@ -163,13 +172,21 @@ public class Timeline extends Fragment implements OnMapReadyCallback {
                     // Green color for start position
                     markerOptions.icon(getMarkerIcon(Color.GREEN));
                 } else {
-                    // Store the last visited location details in Firebase\
-                    DatabaseReference lastVisitedRef ;
+                    String locationName = getLocationName(coordinate.latitude, coordinate.longitude);
+                    DatabaseReference markerLocationsRef2 = mDatabase.child("Semesters");
+                    DatabaseReference srnRef2 = markerLocationsRef2.child("Semester " + sem).child(sec).child(srn).child("Last Visited");
+                    // Store the last visited location details in Firebase
+                    DatabaseReference lastVisitedRef;
                     lastVisitedRef = mDatabase.child("LastVisited").child(srn);
                     lastVisitedRef.child("SRN").setValue(srn);
                     lastVisitedRef.child("latitude").setValue(coordinate.latitude);
                     lastVisitedRef.child("longitude").setValue(coordinate.longitude);
                     lastVisitedRef.child("Date-Time").setValue(dateTime);
+                    srnRef2.child("latitude").setValue(coordinate.latitude);
+                    srnRef2.child("latitude").setValue(coordinate.latitude);
+                    srnRef2.child("longitude").setValue(coordinate.longitude);
+                    srnRef2.child("locationName").setValue(locationName);
+                    srnRef2.child("dateTime").setValue(dateTime);
 
                     // Check if this location is last visited
                     lastVisitedRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -182,31 +199,48 @@ public class Timeline extends Fragment implements OnMapReadyCallback {
                                 if (lastVisitedLatitude != null && lastVisitedLongitude != null &&
                                         lastVisitedLatitude.equals(coordinate.latitude) && lastVisitedLongitude.equals(coordinate.longitude)) {
                                     // Green color for last visited location
-                                    mMap.addMarker(markerOptions.icon(getMarkerIcon(Color.GREEN)));
+                                    markerOptions.icon(getMarkerIcon(Color.GREEN));
                                 } else {
                                     // Red color for other locations
-                                    mMap.addMarker(markerOptions.icon(getMarkerIcon(Color.RED)));
+                                    markerOptions.icon(getMarkerIcon(Color.RED));
                                 }
                             }
+                            // Add the marker to the map
+                            mMap.addMarker(markerOptions);
                         }
 
                         @Override
                         public void onCancelled(@NonNull DatabaseError databaseError) {
                             // Handle database error
+                            Toast.makeText(getContext(), "Database error: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     });
-                    return;
                 }
-                // Add the marker to the map
-                mMap.addMarker(markerOptions);
             }
         }
     }
 
-
     private String getCurrentDateTime() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         return sdf.format(new Date());
+    }
+    private String getLocationName(double latitude, double longitude) {
+
+        Geocoder geocoder = new Geocoder(mContext, Locale.getDefault());
+        try {
+            List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
+            if (addresses != null && !addresses.isEmpty()) {
+                Address address = addresses.get(0);
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i <= address.getMaxAddressLineIndex(); i++) {
+                    sb.append(address.getAddressLine(i)).append(" ");
+                }
+                return sb.toString();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "Unknown Location";
     }
 
     @Override

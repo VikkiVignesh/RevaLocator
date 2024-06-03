@@ -4,18 +4,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.List;
 
 public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentViewHolder> {
 
     private List<Student> studentList;
-    private OnStudentClickListener listener;
+    private OnStudentClickListener onStudentClickListener;
 
-    public StudentAdapter(List<Student> studentList, OnStudentClickListener listener) {
+    public StudentAdapter(List<Student> studentList, OnStudentClickListener onStudentClickListener) {
         this.studentList = studentList;
-        this.listener = listener;
+        this.onStudentClickListener = onStudentClickListener;
     }
 
     @NonNull
@@ -28,8 +30,8 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentV
     @Override
     public void onBindViewHolder(@NonNull StudentViewHolder holder, int position) {
         Student student = studentList.get(position);
-        holder.srnTextView.setText(student.getSrn());
-        holder.itemView.setOnClickListener(v -> listener.onStudentClick(student.getSrn()));
+        holder.srn.setText(student.getSrn());
+        holder.itemView.setOnClickListener(v -> onStudentClickListener.onStudentClick(student));
     }
 
     @Override
@@ -38,16 +40,15 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentV
     }
 
     public static class StudentViewHolder extends RecyclerView.ViewHolder {
-        public TextView srnTextView;
+        TextView srn;
 
-        public StudentViewHolder(View itemView) {
+        public StudentViewHolder(@NonNull View itemView) {
             super(itemView);
-            srnTextView = itemView.findViewById(R.id.tvSrn);
+            srn = itemView.findViewById(R.id.tvSrn);
         }
     }
 
     public interface OnStudentClickListener {
-        void onStudentClick(String srn);
+        void onStudentClick(Student student);
     }
 }
-

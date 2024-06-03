@@ -4,18 +4,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.List;
 
 public class SectionAdapter extends RecyclerView.Adapter<SectionAdapter.SectionViewHolder> {
 
     private List<Section> sectionList;
-    private OnSectionClickListener listener;
+    private OnSectionClickListener onSectionClickListener;
 
-    public SectionAdapter(List<Section> sectionList, OnSectionClickListener listener) {
+    public SectionAdapter(List<Section> sectionList, OnSectionClickListener onSectionClickListener) {
         this.sectionList = sectionList;
-        this.listener = listener;
+        this.onSectionClickListener = onSectionClickListener;
     }
 
     @NonNull
@@ -28,8 +30,8 @@ public class SectionAdapter extends RecyclerView.Adapter<SectionAdapter.SectionV
     @Override
     public void onBindViewHolder(@NonNull SectionViewHolder holder, int position) {
         Section section = sectionList.get(position);
-        holder.sectionTextView.setText(section.getName());
-        holder.itemView.setOnClickListener(v -> listener.onSectionClick(section.getStudents()));
+        holder.sectionName.setText(section.getName());
+        holder.itemView.setOnClickListener(v -> onSectionClickListener.onSectionClick(section));
     }
 
     @Override
@@ -38,16 +40,15 @@ public class SectionAdapter extends RecyclerView.Adapter<SectionAdapter.SectionV
     }
 
     public static class SectionViewHolder extends RecyclerView.ViewHolder {
-        public TextView sectionTextView;
+        TextView sectionName;
 
-        public SectionViewHolder(View itemView) {
+        public SectionViewHolder(@NonNull View itemView) {
             super(itemView);
-            sectionTextView = itemView.findViewById(R.id.tvSection);
+            sectionName = itemView.findViewById(R.id.tvSection);
         }
     }
 
     public interface OnSectionClickListener {
-        void onSectionClick(List<Student> students);
+        void onSectionClick(Section section);
     }
 }
-

@@ -21,51 +21,53 @@ public class Login extends AppCompatActivity {
     FirebaseDatabase myFire;
     DatabaseReference myDb;
     TextInputLayout username, password;
-    String userId,section,semester ;
+    String userId, section, semester;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        btn=findViewById(R.id.log_in);
-        username =findViewById(R.id.logmail);
+        btn = findViewById(R.id.log_in);
+        username = findViewById(R.id.logmail);
         password = findViewById(R.id.logpswrd);
-        myFire=FirebaseDatabase.getInstance();
+        myFire = FirebaseDatabase.getInstance();
+
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String srn = username.getEditText().getText().toString().trim();
                 String logpaswd = password.getEditText().getText().toString().trim();
 
+                // Check for default admin credentials
+                if (srn.equals("AD21R369") && logpaswd.equals("RevaAdmin@369")) {
+                    Toast.makeText(Login.this, "Admin Credentials Matched !!", Toast.LENGTH_SHORT).show();
+                    Intent i = new Intent(Login.this, Admin_View.class);
+                    startActivity(i);
+                    return; // Exit the method after admin login
+                }
 
-
-                myDb=myFire.getReference("Users Data");
+                myDb = myFire.getReference("Users Data");
                 myDb.orderByChild("srn").equalTo(srn).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         if (dataSnapshot.exists()) {
-                            // Email exists in the database
-                            // Now, iterate through the dataSnapshot to find the user with the given email
-                            boolean passwordMatched = false; // Flag to indicate if password matched
+                            // SRN exists in the database
+                            boolean passwordMatched = false;
                             for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                                // Retrieve the user's password from the database
                                 String passwordFromDb = snapshot.child("pass").getValue(String.class);
-                                // Check if the retrieved password matches the one provided by the user
                                 if (passwordFromDb != null && passwordFromDb.equals(logpaswd)) {
-                                    // Password matches, authentication successful
                                     passwordMatched = true;
                                     userId = snapshot.getKey();
                                     section = snapshot.child("section").getValue(String.class);
                                     semester = snapshot.child("sem").getValue(String.class);
-
-                                    break; // Exit the loop as authentication is successful
+                                    break;
                                 }
                             }
                             if (passwordMatched) {
                                 Toast.makeText(Login.this, "Credentials Matched !!", Toast.LENGTH_SHORT).show();
-
-                                Intent i=new Intent(Login.this,MainActivity.class);
-                                i.putExtra("UserId",userId);
-                                i.putExtra("srn",srn);
+                                Intent i = new Intent(Login.this, MainActivity.class);
+                                i.putExtra("UserId", userId);
+                                i.putExtra("srn", srn);
                                 i.putExtra("section", section);
                                 i.putExtra("semester", semester);
                                 startActivity(i);
@@ -73,23 +75,15 @@ public class Login extends AppCompatActivity {
                                 Toast.makeText(Login.this, "Password Not matched", Toast.LENGTH_SHORT).show();
                             }
                         } else {
-                            // Email does not exist in the database
-                            Toast.makeText(Login.this, "Invalid email.Email does not Exists", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(Login.this, "Invalid SRN. SRN does not Exist", Toast.LENGTH_SHORT).show();
                         }
                     }
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
-                        // Handle any errors
-                        Toast.makeText(Login.this, "Error checking email existence. Please try again.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(Login.this, "Error checking SRN existence. Please try again.", Toast.LENGTH_SHORT).show();
                     }
                 });
-
-
-
-
-
-
             }
         });
     }

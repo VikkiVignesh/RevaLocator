@@ -1,13 +1,16 @@
 package com.reva.revalocator;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.List;
 
 public class SemesterFragment extends Fragment {
@@ -31,9 +34,14 @@ public class SemesterFragment extends Fragment {
         return view;
     }
 
-    private void openSectionFragment(List<Section> sections) {
+    private void openSectionFragment(Semester semester) {
+        SectionFragment sectionFragment = new SectionFragment(semester.getSections());
+        Bundle bundle = new Bundle();
+        bundle.putString("semesterName", semester.getName());
+        sectionFragment.setArguments(bundle);
+
         getParentFragmentManager().beginTransaction()
-                .replace(R.id.fragment_container, new SectionFragment(sections))
+                .replace(R.id.fragment_container, sectionFragment)
                 .addToBackStack(null)
                 .commit();
     }

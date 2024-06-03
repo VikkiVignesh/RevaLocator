@@ -169,13 +169,17 @@ public class MapsFragment extends Fragment implements LocationListener, OnMapRea
         if (srn != null) {
             // Create a child node with the SRN as the key
             DatabaseReference srnRef = markerLocationsRef.child(srn);
-            DatabaseReference srnRef2 = markerLocationsRef2.child();
-
+           DatabaseReference srnRef2 = markerLocationsRef2.child("Semester "+sem).child(sec).child(srn).child("Current Location");
             // Update the child node with the new location and date/time
             srnRef.child("latitude").setValue(newPosition.latitude);
             srnRef.child("longitude").setValue(newPosition.longitude);
             srnRef.child("locationName").setValue(locationName);
             srnRef.child("dateTime").setValue(dateTime);
+
+            srnRef2.child("latitude").setValue(newPosition.latitude);
+            srnRef2.child("longitude").setValue(newPosition.longitude);
+            srnRef2.child("locationName").setValue(locationName);
+            srnRef2.child("dateTime").setValue(dateTime);
 
         } else {
             // Handle the case where SRN is null
